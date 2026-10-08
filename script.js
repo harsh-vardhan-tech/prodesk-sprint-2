@@ -1,19 +1,19 @@
 /**
- * Cash-Flow: Salary & Expense Tracker Module
- * Engineering Sprint 02 - Core Engineering & Logic (Vanilla JavaScript)
- * Author: Harsh Vardhan (Prodesk IT Associate)
+ * CashFlow Enterprise — Core Engineering & State Engine
+ * Sprint 02: Logic & Data Persistence (Vanilla JavaScript)
+ * Author: Harsh Vardhan
  */
 
 'use strict';
 
 (function () {
   // --------------------------------------------------------------------------
-  // 1. State Management & Configuration Constants
+  // 1. State Configuration & Tokens
   // --------------------------------------------------------------------------
-  const STORAGE_KEY = 'cashflow_state_v2';
+  const STORAGE_KEY = 'cashflow_state_prod_v2';
   const THEME_STORAGE_KEY = 'cashflow_theme_mode';
 
-  // Fallback exchange rates against base INR in case external API is unreachable
+  // Fallback exchange rates against base INR
   const DEFAULT_RATES = {
     INR: 1.0,
     USD: 0.012, // ~1 USD = ~83.33 INR
@@ -28,22 +28,22 @@
     GBP: '£'
   };
 
-  const CATEGORY_ICONS = {
-    Housing: '🏠',
-    Food: '🍔',
-    Utilities: '💡',
-    Transportation: '🚗',
-    Entertainment: '🎬',
-    Healthcare: '💊',
-    Education: '📚',
-    Shopping: '🛍️',
-    Other: '📁'
+  const CATEGORY_CONFIG = {
+    Housing: { icon: 'fa-house', class: 'cat-housing', label: 'Housing & Facilities' },
+    Food: { icon: 'fa-utensils', class: 'cat-food', label: 'Food & Dining' },
+    Utilities: { icon: 'fa-bolt', class: 'cat-utilities', label: 'Utilities & Bills' },
+    Transportation: { icon: 'fa-car-side', class: 'cat-transportation', label: 'Transportation' },
+    Entertainment: { icon: 'fa-film', class: 'cat-entertainment', label: 'Entertainment' },
+    Healthcare: { icon: 'fa-heart-pulse', class: 'cat-healthcare', label: 'Healthcare' },
+    Education: { icon: 'fa-graduation-cap', class: 'cat-education', label: 'Education' },
+    Shopping: { icon: 'fa-bag-shopping', class: 'cat-shopping', label: 'Shopping' },
+    Other: { icon: 'fa-layer-group', class: 'cat-other', label: 'Miscellaneous' }
   };
 
-  // Primary reactive application state
+  // Primary application state
   const state = {
-    salary: 0, // Stored internally in base currency (INR)
-    expenses: [], // Array of { id, name, amount (in base INR), category, timestamp }
+    salary: 0, // Stored internally in base INR
+    expenses: [], // Array of { id, name, amount (in base INR), category, date }
     currentCurrency: 'INR',
     rates: { ...DEFAULT_RATES },
     chartInstance: null,
@@ -54,7 +54,7 @@
   // 2. DOM Elements Cache
   // --------------------------------------------------------------------------
   const DOM = {
-    // Top Navigation & Actions
+    // Top Navigation & Controls
     currencySelect: document.getElementById('currencySelect'),
     rateStatusIndicator: document.getElementById('rateStatusIndicator'),
     downloadPdfBtn: document.getElementById('downloadPdfBtn'),
@@ -62,12 +62,12 @@
     themeIcon: document.getElementById('themeIcon'),
     resetDataBtn: document.getElementById('resetDataBtn'),
 
-    // Threshold Alert Banner
+    // Liquidity Risk Alert Banner
     thresholdAlertBanner: document.getElementById('thresholdAlertBanner'),
     alertTitle: document.getElementById('alertTitle'),
     alertMessage: document.getElementById('alertMessage'),
 
-    // KPI Displays
+    // KPI Metrics
     totalSalaryDisplay: document.getElementById('totalSalaryDisplay'),
     salaryStatusTag: document.getElementById('salaryStatusTag'),
     totalExpensesDisplay: document.getElementById('totalExpensesDisplay'),
@@ -86,7 +86,7 @@
     currencySymbols: document.querySelectorAll('.currency-symbol'),
     activeCurrencyLabels: document.querySelectorAll('.active-currency-label'),
 
-    // Forms
+    // Inflow & Outflow Forms
     salaryForm: document.getElementById('salaryForm'),
     salaryInput: document.getElementById('salaryInput'),
     salaryErrorMsg: document.getElementById('salaryErrorMsg'),
@@ -104,7 +104,7 @@
     legendBalanceVal: document.getElementById('legendBalanceVal'),
     legendExpensesVal: document.getElementById('legendExpensesVal'),
 
-    // Expenses Ledger
+    // Transaction Ledger
     expensesList: document.getElementById('expensesList'),
     emptyExpensesState: document.getElementById('emptyExpensesState'),
     expensesCounter: document.getElementById('expensesCounter'),
@@ -121,31 +121,16 @@
   // 3. Mathematical & Formatting Utilities
   // --------------------------------------------------------------------------
 
-  /**
-   * Converts a base INR amount to currently selected currency
-   * @param {number} baseAmount - Value in INR
-   * @returns {number}
-   */
   function convertFromBase(baseAmount) {
     const rate = state.rates[state.currentCurrency] || 1;
     return baseAmount * rate;
   }
 
-  /**
-   * Converts an amount in currently selected currency back to base INR
-   * @param {number} displayedAmount - Value in currently active currency
-   * @returns {number}
-   */
   function convertToBase(displayedAmount) {
     const rate = state.rates[state.currentCurrency] || 1;
     return displayedAmount / rate;
   }
 
-  /**
-   * Format number into currency string with commas and 2 decimal points
-   * @param {number} value
-   * @returns {string}
-   */
   function formatMoney(value) {
     const num = Number(value);
     if (!Number.isFinite(num)) return '0.00';
@@ -155,13 +140,23 @@
     });
   }
 
+  function formatTimestamp(isoString) {
+    if (!isoString) return 'Recent';
+    try {
+      const d = new Date(isoString);
+      const isToday = new Date().toDateString() === d.toDateString();
+      const timeStr = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+      if (isToday) return `Today, ${timeStr}`;
+      return `${d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}, ${timeStr}`;
+    } catch {
+      return 'Recent';
+    }
+  }
+
   // --------------------------------------------------------------------------
   // 4. LocalStorage Persistence (Phase 2 Requirement)
   // --------------------------------------------------------------------------
 
-  /**
-   * Serializes and saves state to localStorage
-   */
   function saveStateToStorage() {
     try {
       const payload = {
@@ -171,14 +166,11 @@
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
     } catch (err) {
-      console.error('Failed to save to localStorage:', err);
-      showToast('Error saving state to local storage', 'danger');
+      console.error('LocalStorage write failure:', err);
+      showToast('Error syncing to local cache', 'danger');
     }
   }
 
-  /**
-   * Retrieves and rehydrates state from localStorage
-   */
   function loadStateFromStorage() {
     try {
       const serialized = localStorage.getItem(STORAGE_KEY);
@@ -198,7 +190,7 @@
         }
       }
     } catch (err) {
-      console.warn('LocalStorage data corrupted or missing, resetting defaults:', err);
+      console.warn('LocalStorage retrieval fallback:', err);
     }
   }
 
@@ -206,21 +198,14 @@
   // 5. External API: Currency Conversion (Phase 3 Requirement)
   // --------------------------------------------------------------------------
 
-  /**
-   * Fetches latest live exchange rates from Frankfurter API (Keyless free endpoint)
-   */
   async function fetchLiveExchangeRates() {
     try {
       if (DOM.rateStatusIndicator) {
-        DOM.rateStatusIndicator.textContent = 'Updating...';
-        DOM.rateStatusIndicator.style.color = '#f59e0b';
+        DOM.rateStatusIndicator.textContent = 'Syncing...';
       }
 
-      // Frankfurter API endpoint with base INR
       const response = await fetch('https://api.frankfurter.app/latest?from=INR');
-      if (!response.ok) {
-        throw new Error(`API status ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
       const data = await response.json();
       if (data && data.rates) {
@@ -231,63 +216,57 @@
           GBP: data.rates.GBP || DEFAULT_RATES.GBP
         };
         if (DOM.rateStatusIndicator) {
-          DOM.rateStatusIndicator.textContent = '• Live API';
-          DOM.rateStatusIndicator.style.color = '#10b981';
-          DOM.rateStatusIndicator.title = `Rates fetched from Frankfurter at ${new Date().toLocaleTimeString()}`;
+          DOM.rateStatusIndicator.textContent = 'Live API';
+          DOM.rateStatusIndicator.title = `Rates refreshed via Frankfurter API at ${new Date().toLocaleTimeString()}`;
         }
       }
     } catch (err) {
-      console.warn('Using offline fallback rates due to API fetch failure:', err);
+      console.warn('Using offline fallback rates:', err);
       state.rates = { ...DEFAULT_RATES };
       if (DOM.rateStatusIndicator) {
-        DOM.rateStatusIndicator.textContent = '• Offline Fallback';
-        DOM.rateStatusIndicator.style.color = '#94a3b8';
-        DOM.rateStatusIndicator.title = 'Offline rates active';
+        DOM.rateStatusIndicator.textContent = 'Offline Sync';
+        DOM.rateStatusIndicator.title = 'Offline fallback exchange rates active';
       }
     }
   }
 
   // --------------------------------------------------------------------------
-  // 6. Real-Time State Calculations & DOM Render (Phase 1, 2, 3)
+  // 6. Real-Time Calculation & View Synchronization
   // --------------------------------------------------------------------------
 
-  /**
-   * Recalculates all balances, updates KPI cards, triggers threshold alerts,
-   * re-renders list, and syncs Chart.js visualization.
-   */
   function renderApp() {
     const symbol = CURRENCY_SYMBOLS[state.currentCurrency] || '₹';
 
-    // 1. Update all currency symbols and active currency labels across DOM
+    // 1. Sync labels & currency marks
     DOM.currencySymbols.forEach(el => { el.textContent = symbol; });
     DOM.activeCurrencyLabels.forEach(el => { el.textContent = state.currentCurrency; });
 
-    // 2. Compute Core Mathematical Logic (Values in base INR)
+    // 2. Perform Mathematical Logic (Base INR)
     const totalSalaryINR = Number(state.salary) || 0;
     const totalExpensesINR = state.expenses.reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
     const remainingBalanceINR = totalSalaryINR - totalExpensesINR;
 
-    // Converted values for active display
-    const displayedSalary = convertFromBase(totalSalaryINR);
-    const displayedExpenses = convertFromBase(totalExpensesINR);
-    const displayedBalance = convertFromBase(remainingBalanceINR);
+    // Display values in active currency
+    const dispSalary = convertFromBase(totalSalaryINR);
+    const dispExpenses = convertFromBase(totalExpensesINR);
+    const dispBalance = convertFromBase(remainingBalanceINR);
 
-    // 3. Render Salary KPI Card
-    DOM.totalSalaryDisplay.textContent = formatMoney(displayedSalary);
-    DOM.salaryStatusTag.textContent = totalSalaryINR > 0 ? 'Active Budget' : 'Zero Set';
+    // 3. Render Salary KPI
+    DOM.totalSalaryDisplay.textContent = formatMoney(dispSalary);
+    DOM.salaryStatusTag.textContent = totalSalaryINR > 0 ? 'Active Allocation' : 'Unallocated';
 
-    // 4. Render Expenses KPI Card
-    DOM.totalExpensesDisplay.textContent = formatMoney(displayedExpenses);
+    // 4. Render Expenses KPI
+    DOM.totalExpensesDisplay.textContent = formatMoney(dispExpenses);
     const expensePercent = totalSalaryINR > 0 ? ((totalExpensesINR / totalSalaryINR) * 100).toFixed(1) : 0;
-    DOM.expensePercentageTag.textContent = `${expensePercent}% of Salary`;
+    DOM.expensePercentageTag.textContent = `${expensePercent}% of Inflow`;
     DOM.expenseCountHint.textContent = `${state.expenses.length} transaction${state.expenses.length === 1 ? '' : 's'}`;
 
-    // 5. Render Remaining Balance KPI Card
-    DOM.remainingBalanceDisplay.textContent = formatMoney(displayedBalance);
+    // 5. Render Balance KPI
+    DOM.remainingBalanceDisplay.textContent = formatMoney(dispBalance);
     const remainingPercent = totalSalaryINR > 0 ? ((remainingBalanceINR / totalSalaryINR) * 100).toFixed(1) : 0;
-    DOM.balanceStatusTag.textContent = `${remainingPercent}% Left`;
+    DOM.balanceStatusTag.textContent = `${remainingPercent}% Margin`;
 
-    // 6. Savings Rate KPI Card
+    // 6. Savings Ratio KPI
     let savingsRate = 0;
     if (totalSalaryINR > 0) {
       savingsRate = Math.max(0, Math.min(100, Math.round((remainingBalanceINR / totalSalaryINR) * 100)));
@@ -296,7 +275,7 @@
     DOM.savingsProgressBar.style.width = `${savingsRate}%`;
 
     // ------------------------------------------------------------------------
-    // Phase 3: Critical Threshold Warning Logic
+    // Critical Threshold Warning Logic (Phase 3 Requirement)
     // If Remaining Balance drops below 10% of Total Salary -> Warning Alert
     // ------------------------------------------------------------------------
     const thresholdAmountINR = totalSalaryINR * 0.10;
@@ -304,53 +283,49 @@
     const isDeficit = totalSalaryINR > 0 && remainingBalanceINR < 0;
 
     if (isDeficit) {
-      // Deficit state (< 0)
+      // Over-budget deficit state (< 0)
       DOM.remainingBalanceCard.classList.add('threshold-critical');
       DOM.thresholdAlertBanner.classList.remove('d-none');
-      DOM.alertTitle.textContent = '🚨 Critical Alert: Budget Deficit!';
-      DOM.alertMessage.textContent = `Your total expenses exceed your salary by ${symbol}${formatMoney(Math.abs(displayedBalance))}. Please reduce expenses immediately.`;
-      DOM.balanceRatioHint.textContent = 'Deficit: Over Budget';
-      DOM.savingsStatusHint.textContent = 'Deficit: 0% Saved';
-      DOM.savingsProgressBar.style.background = 'var(--danger-500)';
+      DOM.alertTitle.textContent = 'Critical Alert: Budget Deficit';
+      DOM.alertMessage.textContent = `Outflows exceed income by ${symbol}${formatMoney(Math.abs(dispBalance))}. Immediate spending freeze recommended.`;
+      DOM.balanceRatioHint.textContent = 'Deficit State';
+      DOM.savingsStatusHint.textContent = '0% Capital Retained';
+      DOM.savingsProgressBar.style.backgroundColor = 'var(--rose-600)';
     } else if (isBelowTenPercent) {
-      // Below 10% threshold
+      // Less than 10% safety buffer
       DOM.remainingBalanceCard.classList.add('threshold-critical');
       DOM.thresholdAlertBanner.classList.remove('d-none');
-      DOM.alertTitle.textContent = '⚠️ Critical Warning: Low Balance!';
-      DOM.alertMessage.textContent = `Your remaining balance (${remainingPercent}%) has dropped below 10% of total salary (${symbol}${formatMoney(convertFromBase(thresholdAmountINR))}).`;
-      DOM.balanceRatioHint.textContent = 'Critical (< 10% Remaining)';
-      DOM.savingsStatusHint.textContent = 'Attention required';
-      DOM.savingsProgressBar.style.background = 'var(--warning-500)';
+      DOM.alertTitle.textContent = 'Liquidity Buffer Warning (< 10%)';
+      DOM.alertMessage.textContent = `Remaining balance (${remainingPercent}%) is under the 10% liquidity buffer (${symbol}${formatMoney(convertFromBase(thresholdAmountINR))}). Discretionary spending halted.`;
+      DOM.balanceRatioHint.textContent = 'Buffer Depleted (< 10%)';
+      DOM.savingsStatusHint.textContent = 'Low reserve alert';
+      DOM.savingsProgressBar.style.backgroundColor = 'var(--amber-500)';
     } else {
-      // Normal healthy balance
+      // Healthy surplus
       DOM.remainingBalanceCard.classList.remove('threshold-critical');
       DOM.thresholdAlertBanner.classList.add('d-none');
-      DOM.balanceRatioHint.textContent = totalSalaryINR > 0 ? 'Healthy Budget' : 'No Active Budget';
-      DOM.savingsStatusHint.textContent = totalSalaryINR > 0 ? 'Optimal financial status' : 'Enter salary to begin';
-      DOM.savingsProgressBar.style.background = 'linear-gradient(90deg, var(--success-500), #22c55e)';
+      DOM.balanceRatioHint.textContent = totalSalaryINR > 0 ? 'Surplus Reserve' : 'No Allocation';
+      DOM.savingsStatusHint.textContent = totalSalaryINR > 0 ? 'Stable capital retention' : 'Configure monthly income';
+      DOM.savingsProgressBar.style.backgroundColor = 'var(--emerald-600)';
     }
 
-    // 7. Update Chart & Metrics Pill
-    DOM.legendBalanceVal.textContent = `${symbol}${formatMoney(Math.max(0, displayedBalance))}`;
-    DOM.legendExpensesVal.textContent = `${symbol}${formatMoney(displayedExpenses)}`;
-    updateChart(Math.max(0, displayedBalance), displayedExpenses, symbol);
+    // 7. Update Chart & Readout Pills
+    DOM.legendBalanceVal.textContent = `${symbol}${formatMoney(Math.max(0, dispBalance))}`;
+    DOM.legendExpensesVal.textContent = `${symbol}${formatMoney(dispExpenses)}`;
+    updateChart(Math.max(0, dispBalance), dispExpenses, symbol);
 
-    // 8. Render Expense List
+    // 8. Render Transaction Table
     renderExpenseList();
   }
 
   // --------------------------------------------------------------------------
-  // 7. Dynamic DOM List Rendering & Delete Operations (Phase 1 & Phase 2)
+  // 7. Dynamic DOM Transaction Ledger & Deletes (Phase 1 & Phase 2)
   // --------------------------------------------------------------------------
 
-  /**
-   * Renders the dynamic list of logged expenses with delete buttons
-   */
   function renderExpenseList() {
     const symbol = CURRENCY_SYMBOLS[state.currentCurrency] || '₹';
     const filter = (state.searchFilter || '').trim().toLowerCase();
 
-    // Filter items based on user search input
     const filteredExpenses = state.expenses.filter(item => {
       if (!filter) return true;
       return (
@@ -360,78 +335,71 @@
     });
 
     DOM.expensesCounter.textContent = state.expenses.length;
-
-    // Clear current list content
     DOM.expensesList.innerHTML = '';
 
     if (filteredExpenses.length === 0) {
       DOM.emptyExpensesState.classList.remove('d-none');
       if (filter && state.expenses.length > 0) {
-        DOM.emptyExpensesState.querySelector('.empty-state-title').textContent = 'No matching expenses';
-        DOM.emptyExpensesState.querySelector('.empty-state-text').textContent = `No results found for "${filter}". Clear your search query to see all records.`;
+        DOM.emptyExpensesState.querySelector('.empty-title').textContent = 'No matching transactions';
+        DOM.emptyExpensesState.querySelector('.empty-desc').textContent = `No ledger entries found matching "${filter}". Clear query to view all records.`;
       } else {
-        DOM.emptyExpensesState.querySelector('.empty-state-title').textContent = 'No expenses logged yet';
-        DOM.emptyExpensesState.querySelector('.empty-state-text').textContent = 'Input your expenses in the form on the left to track your spending and see real-time balance calculations.';
+        DOM.emptyExpensesState.querySelector('.empty-title').textContent = 'No transactions recorded';
+        DOM.emptyExpensesState.querySelector('.empty-desc').textContent = 'Use the Log Outflow form to add expenses. Transactions will be logged with automated timestamps and persistent state.';
       }
       return;
     }
 
     DOM.emptyExpensesState.classList.add('d-none');
 
-    // Create DOM elements dynamically using document.createElement
     filteredExpenses.forEach(expense => {
       const li = document.createElement('li');
-      li.className = 'expense-item';
+      li.className = 'ledger-row';
       li.setAttribute('data-id', expense.id);
 
-      // Converted amount
       const convertedAmt = convertFromBase(expense.amount);
-      const icon = CATEGORY_ICONS[expense.category] || '📁';
-      const formattedDate = expense.date
-        ? new Date(expense.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-        : 'Recent';
+      const catConfig = CATEGORY_CONFIG[expense.category] || CATEGORY_CONFIG.Other;
+      const dateText = formatTimestamp(expense.date);
 
-      // Left column
+      // Left Content
       const leftCol = document.createElement('div');
-      leftCol.className = 'expense-item-left';
+      leftCol.className = 'row-left';
 
-      const catIcon = document.createElement('div');
-      catIcon.className = 'expense-category-icon';
-      catIcon.setAttribute('aria-hidden', 'true');
-      catIcon.textContent = icon;
+      const catBadge = document.createElement('div');
+      catBadge.className = `cat-badge ${catConfig.class}`;
+      catBadge.setAttribute('aria-hidden', 'true');
+      catBadge.innerHTML = `<i class="fa-solid ${catConfig.icon}"></i>`;
 
-      const details = document.createElement('div');
-      details.className = 'expense-details';
+      const descBox = document.createElement('div');
+      descBox.className = 'row-desc';
 
       const title = document.createElement('span');
-      title.className = 'expense-title';
+      title.className = 'row-title';
       title.textContent = expense.name;
 
       const meta = document.createElement('span');
-      meta.className = 'expense-meta';
-      meta.textContent = `${expense.category || 'Other'} • ${formattedDate}`;
+      meta.className = 'row-meta';
+      meta.textContent = `${catConfig.label} • ${dateText}`;
 
-      details.appendChild(title);
-      details.appendChild(meta);
-      leftCol.appendChild(catIcon);
-      leftCol.appendChild(details);
+      descBox.appendChild(title);
+      descBox.appendChild(meta);
+      leftCol.appendChild(catBadge);
+      leftCol.appendChild(descBox);
 
-      // Right column
+      // Right Content
       const rightCol = document.createElement('div');
-      rightCol.className = 'expense-item-right';
+      rightCol.className = 'row-right';
 
       const amountSpan = document.createElement('span');
-      amountSpan.className = 'expense-amount-display';
+      amountSpan.className = 'row-sum';
       amountSpan.textContent = `-${symbol}${formatMoney(convertedAmt)}`;
 
-      // Delete Action Button (Phase 2 Requirement)
+      // Delete Button (Phase 2 Requirement)
       const deleteBtn = document.createElement('button');
-      deleteBtn.className = 'btn-trash';
+      deleteBtn.className = 'btn-remove';
       deleteBtn.setAttribute('title', `Delete ${expense.name}`);
-      deleteBtn.setAttribute('aria-label', `Delete ${expense.name} expense`);
-      deleteBtn.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
+      deleteBtn.setAttribute('aria-label', `Delete ${expense.name} transaction`);
+      deleteBtn.innerHTML = '<i class="fa-regular fa-trash-can"></i>';
 
-      // Event listener for deletion
       deleteBtn.addEventListener('click', () => {
         handleDeleteExpense(expense.id, expense.name);
       });
@@ -446,11 +414,6 @@
     });
   }
 
-  /**
-   * Handles deleting an expense from state, updating localStorage and re-rendering
-   * @param {string} expenseId
-   * @param {string} expenseName
-   */
   function handleDeleteExpense(expenseId, expenseName) {
     const prevCount = state.expenses.length;
     state.expenses = state.expenses.filter(item => item.id !== expenseId);
@@ -463,17 +426,12 @@
   }
 
   // --------------------------------------------------------------------------
-  // 8. Chart.js Data Visualization (Phase 2 Requirement)
+  // 8. Chart.js Visualization Engine (Phase 2 Requirement)
   // --------------------------------------------------------------------------
 
-  /**
-   * Creates or updates the dynamic Chart.js Pie Chart ("Remaining Balance vs Total Expenses")
-   * Lifecycle handled properly with .destroy() to prevent canvas duplication (FAQ #8)
-   */
   function updateChart(remainingBalance, totalExpenses, symbol) {
     if (!window.Chart || !DOM.balanceChartCanvas) return;
 
-    // Check if there is data to display
     const hasData = state.salary > 0 || state.expenses.length > 0;
     if (!hasData) {
       if (state.chartInstance) {
@@ -491,7 +449,7 @@
     const chartData = [remainingBalance, totalExpenses];
     const isDark = document.body.classList.contains('theme-dark');
 
-    // If chart instance already exists, safely destroy it before recreating (FAQ #8)
+    // Destroy existing instance before recreation (Lifecycle FAQ #8)
     if (state.chartInstance) {
       state.chartInstance.destroy();
       state.chartInstance = null;
@@ -499,23 +457,24 @@
 
     const ctx = DOM.balanceChartCanvas.getContext('2d');
     state.chartInstance = new window.Chart(ctx, {
-      type: 'pie',
+      type: 'doughnut',
       data: {
-        labels: ['Remaining Balance', 'Total Expenses'],
+        labels: ['Net Available Balance', 'Cumulative Outflow'],
         datasets: [{
           data: chartData,
           backgroundColor: [
-            '#10b981', // Emerald for balance
-            '#f43f5e'  // Rose for expenses
+            '#059669', // Emerald
+            '#e11d48'  // Rose
           ],
           borderColor: isDark ? '#111827' : '#ffffff',
-          borderWidth: 2,
-          hoverOffset: 6
+          borderWidth: 3,
+          hoverOffset: 4
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
+        cutout: '70%',
         plugins: {
           legend: {
             position: 'bottom',
@@ -523,13 +482,20 @@
               color: isDark ? '#cbd5e1' : '#475569',
               font: {
                 family: 'Inter',
-                size: 12,
+                size: 11,
                 weight: '500'
               },
-              padding: 14
+              boxWidth: 10,
+              boxHeight: 10,
+              padding: 16
             }
           },
           tooltip: {
+            backgroundColor: isDark ? '#1e293b' : '#0f172a',
+            titleFont: { family: 'Inter', size: 12, weight: '600' },
+            bodyFont: { family: 'JetBrains Mono', size: 12 },
+            padding: 10,
+            cornerRadius: 6,
             callbacks: {
               label: function (context) {
                 const label = context.label || '';
@@ -540,32 +506,27 @@
           }
         },
         animation: {
-          duration: 400
+          duration: 350
         }
       }
     });
   }
 
   // --------------------------------------------------------------------------
-  // 9. Form Submissions & Strict Validations (Phase 1 Requirement)
+  // 9. Input Form Handlers & Validations (Phase 1 Requirement)
   // --------------------------------------------------------------------------
 
-  /**
-   * Validates and processes Total Salary Form submission
-   */
   function handleSalarySubmit(e) {
     e.preventDefault();
     const rawValue = DOM.salaryInput.value.trim();
 
-    // Prevent execution and show error state if input is empty or invalid (Phase 1)
     if (!rawValue) {
-      showFieldError(DOM.salaryInput, DOM.salaryErrorMsg, 'Salary input cannot be empty.');
+      showFieldError(DOM.salaryInput, DOM.salaryErrorMsg, 'Salary value is required.');
       return;
     }
 
     const parsedSalary = parseFloat(rawValue);
 
-    // Prevent negative or zero salary
     if (isNaN(parsedSalary) || !Number.isFinite(parsedSalary) || parsedSalary <= 0) {
       showFieldError(DOM.salaryInput, DOM.salaryErrorMsg, 'Please enter a valid positive salary amount.');
       return;
@@ -573,22 +534,17 @@
 
     clearFieldError(DOM.salaryInput, DOM.salaryErrorMsg);
 
-    // Convert input value back to base INR before storing
     const salaryInBaseINR = convertToBase(parsedSalary);
     state.salary = salaryInBaseINR;
 
-    // Persist to localStorage and re-render
     saveStateToStorage();
     renderApp();
 
     DOM.salaryInput.value = '';
     const symbol = CURRENCY_SYMBOLS[state.currentCurrency] || '₹';
-    showToast(`Salary set to ${symbol}${formatMoney(parsedSalary)}`, 'success');
+    showToast(`Monthly income allocated: ${symbol}${formatMoney(parsedSalary)}`, 'success');
   }
 
-  /**
-   * Validates and processes Add Expense Form submission
-   */
   function handleExpenseSubmit(e) {
     e.preventDefault();
 
@@ -598,22 +554,22 @@
 
     let hasError = false;
 
-    // Validation: Expense Name
+    // Validate Expense Name
     if (!nameValue) {
-      showFieldError(DOM.expenseNameInput, DOM.expenseNameErrorMsg, 'Expense name cannot be empty.');
+      showFieldError(DOM.expenseNameInput, DOM.expenseNameErrorMsg, 'Description cannot be empty.');
       hasError = true;
     } else {
       clearFieldError(DOM.expenseNameInput, DOM.expenseNameErrorMsg);
     }
 
-    // Validation: Expense Amount
+    // Validate Expense Amount
     if (!rawAmount) {
-      showFieldError(DOM.expenseAmountInput, DOM.expenseAmountErrorMsg, 'Expense amount cannot be empty.');
+      showFieldError(DOM.expenseAmountInput, DOM.expenseAmountErrorMsg, 'Amount is required.');
       hasError = true;
     } else {
       const parsedAmount = parseFloat(rawAmount);
       if (isNaN(parsedAmount) || !Number.isFinite(parsedAmount) || parsedAmount <= 0) {
-        showFieldError(DOM.expenseAmountInput, DOM.expenseAmountErrorMsg, 'Please enter a valid positive expense amount.');
+        showFieldError(DOM.expenseAmountInput, DOM.expenseAmountErrorMsg, 'Enter a valid positive number.');
         hasError = true;
       } else {
         clearFieldError(DOM.expenseAmountInput, DOM.expenseAmountErrorMsg);
@@ -623,32 +579,27 @@
     if (hasError) return;
 
     const parsedAmount = parseFloat(rawAmount);
-    // Convert to base INR for internal storage
     const amountInBaseINR = convertToBase(parsedAmount);
 
-    // Construct new Expense Object
     const newExpense = {
-      id: 'exp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+      id: 'tx_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
       name: nameValue,
       amount: amountInBaseINR,
       category: categoryValue,
       date: new Date().toISOString()
     };
 
-    // Prepend new expense so newest is at the top
     state.expenses.unshift(newExpense);
 
-    // Persist and re-render
     saveStateToStorage();
     renderApp();
 
-    // Reset inputs
     DOM.expenseNameInput.value = '';
     DOM.expenseAmountInput.value = '';
     DOM.expenseNameInput.focus();
 
     const symbol = CURRENCY_SYMBOLS[state.currentCurrency] || '₹';
-    showToast(`Added expense: "${nameValue}" (${symbol}${formatMoney(parsedAmount)})`, 'success');
+    showToast(`Logged outflow: "${nameValue}" (${symbol}${formatMoney(parsedAmount)})`, 'success');
   }
 
   function showFieldError(inputEl, errorEl, message) {
@@ -668,27 +619,19 @@
   }
 
   // --------------------------------------------------------------------------
-  // 10. Report Generation: jsPDF Export (Phase 3 Stretch Goal)
+  // 10. Financial Statement PDF Generator (Phase 3 Requirement)
   // --------------------------------------------------------------------------
 
-  /**
-   * Generates and downloads a branded PDF Financial Statement
-   */
   function exportPdfReport() {
     if (!window.jspdf || !window.jspdf.jsPDF) {
-      showToast('PDF generator library is initializing. Please retry in a moment.', 'danger');
+      showToast('PDF compilation library is loading. Retry in a moment.', 'danger');
       return;
     }
 
     try {
       const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4'
-      });
+      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
 
-      const symbol = CURRENCY_SYMBOLS[state.currentCurrency] || '₹';
       const currencyCode = state.currentCurrency;
       const today = new Date().toLocaleDateString('en-US', {
         year: 'numeric',
@@ -704,108 +647,93 @@
       const dispExpenses = convertFromBase(totalExpensesINR);
       const dispBalance = convertFromBase(remainingBalanceINR);
 
-      // 1. Header Banner
-      doc.setFillColor(79, 70, 229); // Brand Indigo
+      // Header Block
+      doc.setFillColor(15, 23, 42); // Enterprise Navy
       doc.rect(0, 0, 210, 36, 'F');
 
       doc.setTextColor(255, 255, 255);
-      doc.setFontSize(22);
+      doc.setFontSize(20);
       doc.setFont('helvetica', 'bold');
-      doc.text('Cash-Flow Statement', 14, 20);
+      doc.text('CashFlow Financial Statement', 14, 20);
 
-      doc.setFontSize(10);
+      doc.setFontSize(9);
       doc.setFont('helvetica', 'normal');
-      doc.text(`Salary & Expense Tracker Report | Generated: ${today}`, 14, 28);
+      doc.text(`Certified Client-Side Treasury Report | Generated: ${today}`, 14, 28);
 
-      // 2. Summary Box
-      doc.setTextColor(30, 41, 59);
-      doc.setFontSize(14);
+      // Financial Overview Table
+      doc.setTextColor(15, 23, 42);
+      doc.setFontSize(13);
       doc.setFont('helvetica', 'bold');
-      doc.text('Financial Summary', 14, 48);
+      doc.text('Executive Summary', 14, 48);
 
       const summaryTableData = [
-        ['Total Salary', `${currencyCode} ${formatMoney(dispSalary)}`],
-        ['Total Expenses', `${currencyCode} ${formatMoney(dispExpenses)}`],
-        ['Remaining Balance', `${currencyCode} ${formatMoney(dispBalance)}`],
-        ['Savings Rate', `${totalSalaryINR > 0 ? Math.round((remainingBalanceINR / totalSalaryINR) * 100) : 0}%`],
-        ['Status', remainingBalanceINR < 0 ? 'Deficit (Over Budget)' : (remainingBalanceINR < totalSalaryINR * 0.1 ? 'Critical Low Balance' : 'Healthy Budget')]
+        ['Allocated Inflow', `${currencyCode} ${formatMoney(dispSalary)}`],
+        ['Cumulative Outflows', `${currencyCode} ${formatMoney(dispExpenses)}`],
+        ['Net Available Balance', `${currencyCode} ${formatMoney(dispBalance)}`],
+        ['Capital Retention Ratio', `${totalSalaryINR > 0 ? Math.round((remainingBalanceINR / totalSalaryINR) * 100) : 0}%`],
+        ['Liquidity Status', remainingBalanceINR < 0 ? 'Deficit (Over-budget)' : (remainingBalanceINR < totalSalaryINR * 0.1 ? 'Critical Buffer Warning' : 'Healthy Reserve')]
       ];
 
       doc.autoTable({
         startY: 52,
-        head: [['Metric', 'Value']],
+        head: [['Metric', 'Figure']],
         body: summaryTableData,
         theme: 'striped',
-        headStyles: {
-          fillColor: [79, 70, 229],
-          textColor: 255,
-          fontStyle: 'bold'
-        },
-        styles: {
-          font: 'helvetica',
-          fontSize: 10,
-          cellPadding: 3.5
-        },
+        headStyles: { fillColor: [15, 23, 42], textColor: 255, fontStyle: 'bold' },
+        styles: { font: 'helvetica', fontSize: 9.5, cellPadding: 3.5 },
         margin: { left: 14, right: 14 }
       });
 
-      // 3. Itemized Expenses Table
+      // Itemized Outflow Ledger
       const nextY = doc.lastAutoTable.finalY + 12;
-      doc.setFontSize(14);
+      doc.setFontSize(13);
       doc.setFont('helvetica', 'bold');
-      doc.text(`Itemized Expenses Ledger (${state.expenses.length} records)`, 14, nextY);
+      doc.text(`Itemized Outflow Ledger (${state.expenses.length} records)`, 14, nextY);
 
       const expenseRows = state.expenses.map((item, index) => {
         const itemConverted = convertFromBase(item.amount);
         const itemDate = item.date ? new Date(item.date).toLocaleDateString() : '-';
+        const catLabel = CATEGORY_CONFIG[item.category]?.label || 'Miscellaneous';
         return [
           index + 1,
           item.name,
-          item.category || 'Other',
+          catLabel,
           itemDate,
           `${currencyCode} ${formatMoney(itemConverted)}`
         ];
       });
 
       if (expenseRows.length === 0) {
-        expenseRows.push(['-', 'No expenses logged', '-', '-', `${currencyCode} 0.00`]);
+        expenseRows.push(['-', 'No records logged', '-', '-', `${currencyCode} 0.00`]);
       }
 
       doc.autoTable({
         startY: nextY + 4,
-        head: [['#', 'Expense Name', 'Category', 'Date Logged', 'Amount']],
+        head: [['#', 'Merchant / Description', 'Category', 'Date', 'Amount']],
         body: expenseRows,
         theme: 'striped',
-        headStyles: {
-          fillColor: [15, 23, 42],
-          textColor: 255,
-          fontStyle: 'bold'
-        },
-        styles: {
-          font: 'helvetica',
-          fontSize: 9,
-          cellPadding: 3
-        },
+        headStyles: { fillColor: [30, 41, 59], textColor: 255, fontStyle: 'bold' },
+        styles: { font: 'helvetica', fontSize: 9, cellPadding: 3 },
         margin: { left: 14, right: 14 }
       });
 
-      // 4. Footer Note
+      // Footer Note
       const pageHeight = doc.internal.pageSize.height;
       doc.setFontSize(8);
       doc.setTextColor(148, 163, 184);
-      doc.text('Generated by Cash-Flow • Prodesk IT Internship Sprint 02 • Harsh Vardhan', 14, pageHeight - 10);
+      doc.text('CashFlow Enterprise Module • Client-Side Cryptographic Local Persistence • Harsh Vardhan', 14, pageHeight - 10);
 
       const fileName = `CashFlow_Statement_${new Date().toISOString().split('T')[0]}.pdf`;
       doc.save(fileName);
-      showToast('Downloaded PDF Report successfully!', 'success');
+      showToast('Certified PDF Statement exported successfully.', 'success');
     } catch (err) {
-      console.error('Error generating PDF:', err);
-      showToast('Failed to export PDF statement.', 'danger');
+      console.error('PDF generation failure:', err);
+      showToast('Failed to generate PDF statement.', 'danger');
     }
   }
 
   // --------------------------------------------------------------------------
-  // 11. Theme & Reset Management
+  // 11. Theme & Reset Handlers
   // --------------------------------------------------------------------------
 
   function initTheme() {
@@ -820,18 +748,12 @@
     document.body.className = newTheme;
     localStorage.setItem(THEME_STORAGE_KEY, newTheme);
     updateThemeIcon(newTheme);
-
-    // Re-render chart to adapt colors
     renderApp();
   }
 
   function updateThemeIcon(theme) {
     if (!DOM.themeIcon) return;
-    if (theme === 'theme-dark') {
-      DOM.themeIcon.className = 'fa-solid fa-sun';
-    } else {
-      DOM.themeIcon.className = 'fa-solid fa-moon';
-    }
+    DOM.themeIcon.className = theme === 'theme-dark' ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
   }
 
   function openResetModal() {
@@ -848,11 +770,11 @@
     localStorage.removeItem(STORAGE_KEY);
     closeResetModal();
     renderApp();
-    showToast('All state and LocalStorage data reset.', 'info');
+    showToast('Ledger and local storage state purged.', 'info');
   }
 
   // --------------------------------------------------------------------------
-  // 12. Toast Feedback System
+  // 12. Interactive Toast Engine
   // --------------------------------------------------------------------------
 
   function showToast(message, type = 'info') {
@@ -869,61 +791,47 @@
     DOM.toastContainer.appendChild(toast);
 
     setTimeout(() => {
-      if (toast.parentNode) {
-        toast.parentNode.removeChild(toast);
-      }
+      if (toast.parentNode) toast.parentNode.removeChild(toast);
     }, 3000);
   }
 
   // --------------------------------------------------------------------------
-  // 13. Application Initialization & Event Wiring
+  // 13. Initialization & Event Binding
   // --------------------------------------------------------------------------
 
   async function init() {
-    // 1. Initialize Theme
     initTheme();
-
-    // 2. Load Persisted State from LocalStorage (Phase 2)
     loadStateFromStorage();
 
-    // 3. Attach Event Listeners
     if (DOM.salaryForm) {
       DOM.salaryForm.addEventListener('submit', handleSalarySubmit);
     }
-
     if (DOM.expenseForm) {
       DOM.expenseForm.addEventListener('submit', handleExpenseSubmit);
     }
-
     if (DOM.currencySelect) {
       DOM.currencySelect.addEventListener('change', (e) => {
         state.currentCurrency = e.target.value;
         saveStateToStorage();
         renderApp();
-        showToast(`Currency changed to ${state.currentCurrency}`, 'info');
+        showToast(`Currency shifted to ${state.currentCurrency}`, 'info');
       });
     }
-
     if (DOM.downloadPdfBtn) {
       DOM.downloadPdfBtn.addEventListener('click', exportPdfReport);
     }
-
     if (DOM.themeToggleBtn) {
       DOM.themeToggleBtn.addEventListener('click', toggleTheme);
     }
-
     if (DOM.resetDataBtn) {
       DOM.resetDataBtn.addEventListener('click', openResetModal);
     }
-
     if (DOM.cancelResetBtn) {
       DOM.cancelResetBtn.addEventListener('click', closeResetModal);
     }
-
     if (DOM.confirmResetBtn) {
       DOM.confirmResetBtn.addEventListener('click', confirmResetState);
     }
-
     if (DOM.searchExpenseInput) {
       DOM.searchExpenseInput.addEventListener('input', (e) => {
         state.searchFilter = e.target.value;
@@ -931,7 +839,6 @@
       });
     }
 
-    // Input error clears on typing
     if (DOM.salaryInput) {
       DOM.salaryInput.addEventListener('input', () => {
         clearFieldError(DOM.salaryInput, DOM.salaryErrorMsg);
@@ -948,24 +855,17 @@
       });
     }
 
-    // Modal background click to close
     if (DOM.resetConfirmModal) {
       DOM.resetConfirmModal.addEventListener('click', (e) => {
-        if (e.target === DOM.resetConfirmModal) {
-          closeResetModal();
-        }
+        if (e.target === DOM.resetConfirmModal) closeResetModal();
       });
     }
 
-    // 4. Initial Render with stored data
     renderApp();
-
-    // 5. Fetch Live Exchange Rates in background (Phase 3 API)
     await fetchLiveExchangeRates();
     renderApp();
   }
 
-  // Run on DOM load
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
   } else {
