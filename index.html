@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cash-Flow | Salary & Expense Tracker</title>
+  <meta name="description" content="A functional, real-time Cash-Flow and Salary & Expense Tracker dashboard built with Vanilla JavaScript, LocalStorage persistence, Chart.js visualization, and PDF report export.">
+  <meta name="theme-color" content="#4f46e5">
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome Icons CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- jsPDF & AutoTable CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf-plugin-autotable.min.js"></script>
+</head>
+<body class="theme-light">
+  <!-- Top Navigation Header -->
+  <header class="app-header" role="banner">
+    <div class="header-container">
+      <div class="brand-group">
+        <div class="brand-icon">
+          <i class="fa-solid fa-chart-pie"></i>
+        </div>
+        <div class="brand-text">
+          <h1 class="brand-title">Cash-Flow</h1>
+          <p class="brand-subtitle">Salary & Expense Tracker &bull; Sprint 02</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Currency Selector (Phase 3 API Integration) -->
+        <div class="currency-selector-wrapper" title="Toggle Display Currency">
+          <label for="currencySelect" class="visually-hidden">Select Currency</label>
+          <span class="currency-icon"><i class="fa-solid fa-globe"></i></span>
+          <select id="currencySelect" class="currency-select" aria-label="Select Currency">
+            <option value="INR" selected>INR (₹)</option>
+            <option value="USD">USD ($)</option>
+            <option value="EUR">EUR (€)</option>
+            <option value="GBP">GBP (£)</option>
+          </select>
+          <span id="rateStatusIndicator" class="rate-indicator" title="Live exchange rates active">&#x2022; Live</span>
+        </div>
+
+        <!-- Export PDF Report (Phase 3 Stretch Goal) -->
+        <button id="downloadPdfBtn" class="btn btn-secondary" title="Export PDF Statement">
+          <i class="fa-solid fa-file-pdf"></i>
+          <span>Download Report</span>
+        </button>
+
+        <!-- Theme Toggle -->
+        <button id="themeToggleBtn" class="btn btn-icon" title="Toggle Dark/Light Mode" aria-label="Toggle Theme">
+          <i class="fa-solid fa-moon" id="themeIcon"></i>
+        </button>
+
+        <!-- Reset State Button -->
+        <button id="resetDataBtn" class="btn btn-icon btn-danger-outline" title="Reset All Data" aria-label="Reset All Data">
+          <i class="fa-solid fa-rotate-left"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Critical Threshold Alert Banner (Phase 3 Requirement) -->
+  <div id="thresholdAlertBanner" class="alert-banner alert-critical d-none" role="alert" aria-live="polite">
+    <div class="alert-banner-content">
+      <div class="alert-icon">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <div class="alert-text">
+        <strong id="alertTitle">Critical Warning: Low Balance!</strong>
+        <span id="alertMessage">Your remaining balance has dropped below 10% of total salary. Please review your expenses.</span>
+      </div>
+    </div>
+  </div>
+
+  <main class="main-container">
+    <!-- KPI Summary Metric Cards (Phase 1 & Phase 2 State Display) -->
+    <section class="kpi-grid" aria-label="Financial Overview">
+      <!-- Card 1: Total Salary -->
+      <article class="kpi-card card-salary">
+        <div class="kpi-header">
+          <span class="kpi-label">Total Salary</span>
+          <div class="kpi-icon-badge badge-salary">
+            <i class="fa-solid fa-wallet"></i>
+          </div>
+        </div>
+        <div class="kpi-value-row">
+          <span class="currency-symbol">₹</span>
+          <span id="totalSalaryDisplay" class="kpi-number">0.00</span>
+        </div>
+        <div class="kpi-footer">
+          <span class="kpi-tag" id="salaryStatusTag">Base Income</span>
+          <span class="kpi-hint">Persisted in LocalStorage</span>
+        </div>
+      </article>
+
+      <!-- Card 2: Total Expenses -->
+      <article class="kpi-card card-expenses">
+        <div class="kpi-header">
+          <span class="kpi-label">Total Expenses</span>
+          <div class="kpi-icon-badge badge-expenses">
+            <i class="fa-solid fa-receipt"></i>
+          </div>
+        </div>
+        <div class="kpi-value-row">
+          <span class="currency-symbol">₹</span>
+          <span id="totalExpensesDisplay" class="kpi-number">0.00</span>
+        </div>
+        <div class="kpi-footer">
+          <span class="kpi-tag tag-expenses" id="expensePercentageTag">0% of Salary</span>
+          <span class="kpi-hint" id="expenseCountHint">0 transactions</span>
+        </div>
+      </article>
+
+      <!-- Card 3: Remaining Balance (Critical color shift applied here) -->
+      <article class="kpi-card card-balance" id="remainingBalanceCard">
+        <div class="kpi-header">
+          <span class="kpi-label">Remaining Balance</span>
+          <div class="kpi-icon-badge badge-balance" id="balanceBadge">
+            <i class="fa-solid fa-vault"></i>
+          </div>
+        </div>
+        <div class="kpi-value-row">
+          <span class="currency-symbol" id="balanceCurrencySymbol">₹</span>
+          <span id="remainingBalanceDisplay" class="kpi-number">0.00</span>
+        </div>
+        <div class="kpi-footer">
+          <span class="kpi-tag tag-balance" id="balanceStatusTag">100% Left</span>
+          <span class="kpi-hint" id="balanceRatioHint">Healthy Budget</span>
+        </div>
+      </article>
+
+      <!-- Card 4: Savings Rate & Financial Health -->
+      <article class="kpi-card card-health">
+        <div class="kpi-header">
+          <span class="kpi-label">Savings Rate</span>
+          <div class="kpi-icon-badge badge-health">
+            <i class="fa-solid fa-piggy-bank"></i>
+          </div>
+        </div>
+        <div class="kpi-value-row">
+          <span id="savingsRateDisplay" class="kpi-number">100%</span>
+        </div>
+        <div class="kpi-progress-bar">
+          <div id="savingsProgressBar" class="progress-fill" style="width: 100%;"></div>
+        </div>
+        <div class="kpi-footer">
+          <span class="kpi-hint" id="savingsStatusHint">Optimal financial status</span>
+        </div>
+      </article>
+    </section>
+
+    <!-- Main Workspace Two-Column Grid -->
+    <div class="workspace-grid">
+      <!-- Left Column: Input Forms Architecture -->
+      <section class="forms-column" aria-label="Input Forms">
+        <!-- Form 1: Total Salary Input Architecture (Phase 1) -->
+        <div class="panel-card">
+          <div class="panel-header">
+            <div class="panel-title-group">
+              <span class="panel-icon"><i class="fa-solid fa-money-bill-wave"></i></span>
+              <h2>Set Total Salary</h2>
+            </div>
+            <span class="phase-badge">Phase 1 MVP</span>
+          </div>
+          <form id="salaryForm" class="panel-form" novalidate>
+            <div class="form-group">
+              <label for="salaryInput" class="form-label">
+                Monthly Income / Salary (<span class="active-currency-label">INR</span>)
+                <span class="required">*</span>
+              </label>
+              <div class="input-prefix-wrapper">
+                <span class="input-prefix currency-symbol">₹</span>
+                <input 
+                  type="number" 
+                  id="salaryInput" 
+                  class="form-control" 
+                  placeholder="e.g. 50000" 
+                  min="0.01" 
+                  step="any"
+                  required 
+                />
+              </div>
+              <div id="salaryErrorMsg" class="form-error-msg d-none" role="alert">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <span>Please enter a valid positive salary amount.</span>
+              </div>
+            </div>
+
+            <button type="submit" id="saveSalaryBtn" class="btn btn-primary btn-block">
+              <i class="fa-solid fa-check"></i>
+              <span>Save Total Salary</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Form 2: Log Expense Input Architecture (Phase 1) -->
+        <div class="panel-card">
+          <div class="panel-header">
+            <div class="panel-title-group">
+              <span class="panel-icon"><i class="fa-solid fa-plus-circle"></i></span>
+              <h2>Log New Expense</h2>
+            </div>
+            <span class="phase-badge">Phase 1 MVP</span>
+          </div>
+
+          <form id="expenseForm" class="panel-form" novalidate>
+            <!-- Expense Name -->
+            <div class="form-group">
+              <label for="expenseNameInput" class="form-label">
+                Expense Name / Title
+                <span class="required">*</span>
+              </label>
+              <div class="input-wrapper">
+                <input 
+                  type="text" 
+                  id="expenseNameInput" 
+                  class="form-control" 
+                  placeholder="e.g. House Rent, Groceries, WiFi" 
+                  required 
+                  maxlength="60"
+                />
+              </div>
+              <div id="expenseNameErrorMsg" class="form-error-msg d-none" role="alert">
+                <i class="fa-solid fa-circle-exclamation"></i>
+                <span>Expense name cannot be empty.</span>
+              </div>
+            </div>
+
+            <div class="form-row-two">
+              <!-- Expense Amount -->
+              <div class="form-group">
+                <label for="expenseAmountInput" class="form-label">
+                  Amount (<span class="active-currency-label">INR</span>)
+                  <span class="required">*</span>
+                </label>
+                <div class="input-prefix-wrapper">
+                  <span class="input-prefix currency-symbol">₹</span>
+                  <input 
+                    type="number" 
+                    id="expenseAmountInput" 
+                    class="form-control" 
+                    placeholder="e.g. 15000" 
+                    min="0.01" 
+                    step="any"
+                    required 
+                  />
+                </div>
+                <div id="expenseAmountErrorMsg" class="form-error-msg d-none" role="alert">
+                  <i class="fa-solid fa-circle-exclamation"></i>
+                  <span>Please enter a valid positive expense amount.</span>
+                </div>
+              </div>
+
+              <!-- Expense Category -->
+              <div class="form-group">
+                <label for="expenseCategorySelect" class="form-label">Category</label>
+                <select id="expenseCategorySelect" class="form-control">
+                  <option value="Housing">🏠 Housing & Rent</option>
+                  <option value="Food">🍔 Food & Groceries</option>
+                  <option value="Utilities">💡 Utilities & Bills</option>
+                  <option value="Transportation">🚗 Transportation</option>
+                  <option value="Entertainment">🎬 Entertainment</option>
+                  <option value="Healthcare">💊 Healthcare</option>
+                  <option value="Education">📚 Education</option>
+                  <option value="Shopping">🛍️ Shopping</option>
+                  <option value="Other" selected>📁 Other / Misc</option>
+                </select>
+              </div>
+            </div>
+
+            <button type="submit" id="addExpenseBtn" class="btn btn-accent btn-block">
+              <i class="fa-solid fa-plus"></i>
+              <span>Add Expense to State</span>
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Right Column: Visualization & Transaction Ledger -->
+      <section class="display-column" aria-label="Visualizations and Records">
+        <!-- Visualization: Chart.js Dynamic Pie Chart (Phase 2) -->
+        <div class="panel-card chart-panel">
+          <div class="panel-header">
+            <div class="panel-title-group">
+              <span class="panel-icon"><i class="fa-solid fa-chart-pie"></i></span>
+              <h2>Financial Breakdown</h2>
+            </div>
+            <div class="chart-header-actions">
+              <span class="status-indicator">Chart.js Active</span>
+            </div>
+          </div>
+
+          <div class="chart-container">
+            <canvas id="balanceChart" aria-label="Remaining Balance vs Total Expenses Pie Chart" role="img"></canvas>
+            <div id="emptyChartPlaceholder" class="empty-chart-state d-none">
+              <i class="fa-solid fa-chart-pie placeholder-icon"></i>
+              <p>Add a salary and expenses to view the dynamic chart visualization.</p>
+            </div>
+          </div>
+
+          <div class="chart-legend-metrics" id="chartMetricsRow">
+            <div class="metric-pill pill-balance">
+              <span class="pill-dot dot-balance"></span>
+              <span class="pill-label">Balance:</span>
+              <strong id="legendBalanceVal">0.00</strong>
+            </div>
+            <div class="metric-pill pill-expenses">
+              <span class="pill-dot dot-expenses"></span>
+              <span class="pill-label">Expenses:</span>
+              <strong id="legendExpensesVal">0.00</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Expense Ledger & Delete Operations (Phase 2) -->
+        <div class="panel-card ledger-panel">
+          <div class="panel-header">
+            <div class="panel-title-group">
+              <span class="panel-icon"><i class="fa-solid fa-list-check"></i></span>
+              <h2>Expense Ledger</h2>
+              <span id="expensesCounter" class="counter-badge">0</span>
+            </div>
+            <div class="ledger-actions">
+              <!-- Filter / Search input -->
+              <div class="search-input-wrapper">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input 
+                  type="text" 
+                  id="searchExpenseInput" 
+                  class="search-input" 
+                  placeholder="Filter expenses..." 
+                  aria-label="Filter expenses"
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic Expense List (DOM Rendering with Delete action) -->
+          <div class="expenses-list-container">
+            <ul id="expensesList" class="expenses-list" aria-label="Logged Expenses List">
+              <!-- Dynamically populated via script.js -->
+            </ul>
+
+            <!-- Empty State for Expenses -->
+            <div id="emptyExpensesState" class="empty-state">
+              <div class="empty-state-icon">
+                <i class="fa-solid fa-receipt"></i>
+              </div>
+              <h3 class="empty-state-title">No expenses logged yet</h3>
+              <p class="empty-state-text">Input your expenses in the form on the left to track your spending and see real-time balance calculations.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Custom Confirmation Modal for Data Reset -->
+  <div id="resetConfirmModal" class="modal-backdrop d-none" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <div class="modal-icon-danger">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+      </div>
+      <h3 id="modalTitle" class="modal-title">Reset Cash-Flow State?</h3>
+      <p class="modal-desc">This will erase your saved salary and all expense records from LocalStorage. This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button id="cancelResetBtn" class="btn btn-secondary">Cancel</button>
+        <button id="confirmResetBtn" class="btn btn-danger">Yes, Reset All</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="footer-container">
+      <p>&copy; 2026 Cash-Flow Module &bull; Prodesk IT Sprint 02 Engineering Deliverable &bull; Developed by Harsh Vardhan</p>
+      <div class="footer-badges">
+        <span class="badge-tag">Vanilla JavaScript</span>
+        <span class="badge-tag">LocalStorage</span>
+        <span class="badge-tag">Chart.js</span>
+        <span class="badge-tag">jsPDF</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Application Logic -->
+  <script src="script.js"></script>
+</body>
+</html>
