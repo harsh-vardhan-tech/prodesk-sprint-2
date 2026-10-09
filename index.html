@@ -103,7 +103,7 @@
       <!-- Card 1: Total Salary -->
       <div class="kpi-card card-income">
         <div class="kpi-top">
-          <span class="kpi-caption">Allocated Income</span>
+          <span class="kpi-caption">Total Salary</span>
           <div class="kpi-icon-pill icon-pill-income">
             <i class="fa-solid fa-money-check-dollar"></i>
           </div>
@@ -121,7 +121,7 @@
       <!-- Card 2: Total Expenses -->
       <div class="kpi-card card-spend">
         <div class="kpi-top">
-          <span class="kpi-caption">Cumulative Spend</span>
+          <span class="kpi-caption">Total Expenses</span>
           <div class="kpi-icon-pill icon-pill-spend">
             <i class="fa-solid fa-arrow-trend-up"></i>
           </div>
@@ -139,7 +139,7 @@
       <!-- Card 3: Remaining Balance -->
       <div class="kpi-card card-liquidity" id="remainingBalanceCard">
         <div class="kpi-top">
-          <span class="kpi-caption">Net Available Balance</span>
+          <span class="kpi-caption">Remaining Balance</span>
           <div class="kpi-icon-pill icon-pill-liquidity" id="balanceBadge">
             <i class="fa-solid fa-shield-halved"></i>
           </div>
@@ -157,7 +157,7 @@
       <!-- Card 4: Savings Ratio -->
       <div class="kpi-card card-ratio">
         <div class="kpi-top">
-          <span class="kpi-caption">Savings Margin</span>
+          <span class="kpi-caption">Savings Rate</span>
           <div class="kpi-icon-pill icon-pill-ratio">
             <i class="fa-solid fa-chart-line"></i>
           </div>
@@ -183,15 +183,15 @@
           <div class="card-head">
             <div class="card-head-title">
               <i class="fa-solid fa-wallet head-icon"></i>
-              <h3>Set Monthly Income</h3>
+              <h3>Set Total Salary</h3>
             </div>
-            <span class="status-pill">Inflow Source</span>
+            <span class="status-pill">Phase 1 P0</span>
           </div>
 
           <form id="salaryForm" class="standard-form" novalidate>
             <div class="field-unit">
               <label for="salaryInput" class="field-label">
-                Total Monthly Salary (<span class="active-currency-label">INR</span>)
+                Total Salary (<span class="active-currency-label">INR</span>)
                 <span class="field-req">*</span>
               </label>
               <div class="field-input-box">
@@ -214,7 +214,7 @@
 
             <button type="submit" id="saveSalaryBtn" class="btn btn-primary btn-full">
               <i class="fa-solid fa-check"></i>
-              <span>Save Income Allocation</span>
+              <span>Save Total Salary</span>
             </button>
           </form>
         </article>
@@ -224,23 +224,23 @@
           <div class="card-head">
             <div class="card-head-title">
               <i class="fa-solid fa-plus-minus head-icon"></i>
-              <h3>Log Outflow</h3>
+              <h3>Log New Expense</h3>
             </div>
-            <span class="status-pill">Expenditure</span>
+            <span class="status-pill">Phase 1 P0</span>
           </div>
 
           <form id="expenseForm" class="standard-form" novalidate>
             <!-- Expense Title -->
             <div class="field-unit">
               <label for="expenseNameInput" class="field-label">
-                Expense Description / Merchant
+                Expense Name
                 <span class="field-req">*</span>
               </label>
               <input 
                 type="text" 
                 id="expenseNameInput" 
                 class="text-input" 
-                placeholder="e.g. Apex Office Rent, Cloud Infrastructure, Team Lunch" 
+                placeholder="e.g. Apex Office Rent, Cloud Hosting, Groceries" 
                 required 
                 maxlength="75"
               />
@@ -255,7 +255,7 @@
               <!-- Expense Amount -->
               <div class="field-unit">
                 <label for="expenseAmountInput" class="field-label">
-                  Amount (<span class="active-currency-label">INR</span>)
+                  Expense Amount (<span class="active-currency-label">INR</span>)
                   <span class="field-req">*</span>
                 </label>
                 <div class="field-input-box">
@@ -308,15 +308,15 @@
           <div class="card-head">
             <div class="card-head-title">
               <i class="fa-solid fa-chart-pie head-icon"></i>
-              <h3>Capital Allocation Breakdown</h3>
+              <h3>Remaining Balance vs. Total Expenses</h3>
             </div>
             <div class="chart-badges">
-              <span class="live-pill">Real-time Visualization</span>
+              <span class="live-pill">Dynamic Pie Chart</span>
             </div>
           </div>
 
           <div class="chart-canvas-wrap">
-            <canvas id="balanceChart" aria-label="Net Balance vs Total Spend Ratio" role="img"></canvas>
+            <canvas id="balanceChart" aria-label="Remaining Balance vs Total Expenses Pie Chart" role="img"></canvas>
             <div id="emptyChartPlaceholder" class="chart-blank-state d-none">
               <div class="blank-state-ring">
                 <i class="fa-solid fa-chart-pie"></i>
@@ -330,12 +330,12 @@
           <div class="chart-indicators" id="chartMetricsRow">
             <div class="indicator-chip chip-balance">
               <span class="dot-indicator dot-bal"></span>
-              <span class="chip-label">Available Balance:</span>
+              <span class="chip-label">Remaining Balance:</span>
               <strong id="legendBalanceVal" class="chip-value">0.00</strong>
             </div>
             <div class="indicator-chip chip-expenses">
               <span class="dot-indicator dot-exp"></span>
-              <span class="chip-label">Total Outflows:</span>
+              <span class="chip-label">Total Expenses:</span>
               <strong id="legendExpensesVal" class="chip-value">0.00</strong>
             </div>
           </div>

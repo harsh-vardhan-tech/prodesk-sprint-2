@@ -457,24 +457,23 @@
 
     const ctx = DOM.balanceChartCanvas.getContext('2d');
     state.chartInstance = new window.Chart(ctx, {
-      type: 'doughnut',
+      type: 'pie',
       data: {
-        labels: ['Net Available Balance', 'Cumulative Outflow'],
+        labels: ['Remaining Balance', 'Total Expenses'],
         datasets: [{
           data: chartData,
           backgroundColor: [
-            '#059669', // Emerald
-            '#e11d48'  // Rose
+            '#059669', // Emerald for Remaining Balance
+            '#e11d48'  // Rose for Total Expenses
           ],
           borderColor: isDark ? '#111827' : '#ffffff',
-          borderWidth: 3,
-          hoverOffset: 4
+          borderWidth: 2,
+          hoverOffset: 6
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        cutout: '70%',
         plugins: {
           legend: {
             position: 'bottom',
