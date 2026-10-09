@@ -1,14 +1,9 @@
-/* Cash-Flow: Salary & Expense Tracker Stylesheet */
-
-/* --------------------------------------------------------------------------
-   1. Theme Tokens & Design Variables
-   -------------------------------------------------------------------------- */
 :root {
-  /* Functional Typography */
+  
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-mono: 'JetBrains Mono', SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
-  /* Universal Transitions & Radii */
+  
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --duration-fast: 150ms;
   --duration-normal: 220ms;
@@ -20,7 +15,7 @@
   --radius-xl: 18px;
   --radius-pill: 9999px;
 
-  /* Universal Accents */
+  
   --brand-navy: #0f172a;
   --brand-blue: #2563eb;
   --emerald-500: #10b981;
@@ -35,7 +30,6 @@
   --amber-600: #d97706;
 }
 
-/* Light Theme (Default) */
 body.theme-light {
   --bg-app: #f8fafc;
   --bg-surface: #ffffff;
@@ -59,7 +53,6 @@ body.theme-light {
   --focus-ring: rgba(37, 99, 235, 0.14);
 }
 
-/* Dark Theme (Enterprise Midnight) */
 body.theme-dark {
   --bg-app: #0b0f19;
   --bg-surface: #111827;
@@ -83,9 +76,6 @@ body.theme-dark {
   --focus-ring: rgba(59, 130, 246, 0.22);
 }
 
-/* --------------------------------------------------------------------------
-   2. Reset & Structural Typography
-   -------------------------------------------------------------------------- */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -127,9 +117,6 @@ body {
   border: 0;
 }
 
-/* --------------------------------------------------------------------------
-   3. Application Shell Navigation
-   -------------------------------------------------------------------------- */
 .app-header {
   position: sticky;
   top: 0;
@@ -219,7 +206,6 @@ body.theme-dark .version-tag {
   gap: 0.75rem;
 }
 
-/* Operating Currency Switcher */
 .currency-switch-box {
   display: flex;
   align-items: center;
@@ -269,7 +255,6 @@ body.theme-dark .version-tag {
   border-radius: var(--radius-xs);
 }
 
-/* Standard Buttons */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -357,9 +342,6 @@ body.theme-dark .btn-primary:hover {
   background-color: rgba(244, 63, 94, 0.08);
 }
 
-/* --------------------------------------------------------------------------
-   4. Liquidity Risk Alert Banner (Phase 3 Requirement)
-   -------------------------------------------------------------------------- */
 .risk-banner {
   max-width: 1240px;
   margin: 1.25rem auto 0;
@@ -414,9 +396,6 @@ body.theme-dark .risk-banner {
   opacity: 0.95;
 }
 
-/* --------------------------------------------------------------------------
-   5. Primary Workspace & Financial KPI Row
-   -------------------------------------------------------------------------- */
 .app-main {
   max-width: 1240px;
   margin: 0 auto;
@@ -604,7 +583,6 @@ body.theme-dark .trend-liquidity {
   transition: width 350ms var(--ease-out), background-color 350ms;
 }
 
-/* Critical Low Balance State (Red balance text & border) */
 .card-liquidity.threshold-critical {
   border-color: var(--rose-500);
   background-color: #fffbfa;
@@ -625,9 +603,6 @@ body.theme-dark .card-liquidity.threshold-critical {
   color: #9f1239;
 }
 
-/* --------------------------------------------------------------------------
-   6. Two-Column Dashboard Layout
-   -------------------------------------------------------------------------- */
 .dashboard-grid {
   display: grid;
   grid-template-columns: 440px 1fr;
@@ -648,7 +623,6 @@ body.theme-dark .card-liquidity.threshold-critical {
   gap: 1.5rem;
 }
 
-/* Surface Cards */
 .surface-card {
   background-color: var(--bg-surface);
   border: 1px solid var(--border-card);
@@ -709,7 +683,6 @@ body.theme-dark .badge-counter {
   background-color: var(--brand-blue);
 }
 
-/* Forms */
 .standard-form {
   display: flex;
   flex-direction: column;
@@ -801,9 +774,6 @@ body.theme-dark .badge-counter {
   margin-top: 0.2rem;
 }
 
-/* --------------------------------------------------------------------------
-   7. Chart Panel (Dynamic Visualization)
-   -------------------------------------------------------------------------- */
 .chart-deck {
   display: flex;
   flex-direction: column;
@@ -904,9 +874,6 @@ body.theme-dark .badge-counter {
   color: var(--text-main);
 }
 
-/* --------------------------------------------------------------------------
-   8. Transaction Ledger & Delete Operations
-   -------------------------------------------------------------------------- */
 .ledger-deck {
   display: flex;
   flex-direction: column;
@@ -992,7 +959,6 @@ body.theme-dark .badge-counter {
   gap: 0.75rem;
 }
 
-/* Category Badge Icons */
 .cat-badge {
   width: 36px;
   height: 36px;
@@ -1004,7 +970,6 @@ body.theme-dark .badge-counter {
   flex-shrink: 0;
 }
 
-/* Category Specific Color Tokens */
 .cat-housing { background-color: #eff6ff; color: #1d4ed8; }
 .cat-food { background-color: #fffbeb; color: #b45309; }
 .cat-utilities { background-color: #fefce8; color: #a16207; }
@@ -1081,7 +1046,6 @@ body.theme-dark .btn-remove:hover {
   color: #f87171;
 }
 
-/* Empty State */
 .empty-ledger-view {
   display: flex;
   flex-direction: column;
@@ -1119,9 +1083,6 @@ body.theme-dark .btn-remove:hover {
   line-height: 1.4;
 }
 
-/* --------------------------------------------------------------------------
-   9. Clean Confirmation Modal
-   -------------------------------------------------------------------------- */
 .modal-backdrop {
   position: fixed;
   inset: 0;
@@ -1211,9 +1172,6 @@ body.theme-dark .modal-alert-icon {
   background-color: var(--rose-700);
 }
 
-/* --------------------------------------------------------------------------
-   10. Interactive Toast Hub
-   -------------------------------------------------------------------------- */
 .toast-hub {
   position: fixed;
   bottom: 1.25rem;
@@ -1256,9 +1214,6 @@ body.theme-dark .modal-alert-icon {
 .toast-danger i { color: var(--rose-600); }
 .toast-info i { color: var(--brand-blue); }
 
-/* --------------------------------------------------------------------------
-   11. Footer
-   -------------------------------------------------------------------------- */
 .app-footer {
   border-top: 1px solid var(--border-card);
   background-color: var(--bg-surface);

@@ -4,34 +4,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cash-Flow | Salary & Expense Tracker</title>
-  <meta name="description" content="A functional salary and expense tracker dashboard with real-time balance calculations, Chart.js pie chart visualization, and PDF report export.">
-  <meta name="theme-color" content="#0f172a">
-
-  <!-- Inter & JetBrains Mono Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-  <!-- Font Awesome 6 Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-  <!-- Core Stylesheet -->
   <link rel="stylesheet" href="style.css">
-
-  <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <!-- jsPDF & AutoTable CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf-plugin-autotable.min.js"></script>
 </head>
 <body class="theme-light">
-  <!-- Application Header -->
-  <header class="app-header" role="banner">
+  <header class="app-header">
     <div class="header-inner">
-      <!-- Brand & Title -->
       <div class="header-brand">
-        <div class="brand-mark" aria-hidden="true">
+        <div class="brand-mark">
           <i class="fa-solid fa-chart-pie"></i>
         </div>
         <div class="brand-meta">
@@ -40,13 +26,10 @@
         </div>
       </div>
 
-      <!-- Quick Controls -->
       <div class="header-controls">
-        <!-- Currency Switcher -->
-        <div class="currency-switch-box" title="Switch Currency">
-          <span class="status-dot-live" aria-hidden="true"></span>
-          <label for="currencySelect" class="visually-hidden">Display Currency</label>
-          <select id="currencySelect" class="currency-dropdown" aria-label="Operating Currency">
+        <div class="currency-switch-box">
+          <span class="status-dot-live"></span>
+          <select id="currencySelect" class="currency-dropdown">
             <option value="INR" selected>INR (₹)</option>
             <option value="USD">USD ($)</option>
             <option value="EUR">EUR (€)</option>
@@ -55,45 +38,38 @@
           <span id="rateStatusIndicator" class="rate-status-badge">Live API</span>
         </div>
 
-        <!-- Download Report Button (jsPDF) -->
-        <button id="downloadPdfBtn" class="btn btn-export" title="Download PDF Report">
+        <button id="downloadPdfBtn" class="btn btn-export">
           <i class="fa-solid fa-file-pdf"></i>
           <span>Download Report</span>
         </button>
 
-        <!-- Theme Mode Toggle -->
-        <button id="themeToggleBtn" class="btn-tool" title="Toggle Theme" aria-label="Toggle Theme">
+        <button id="themeToggleBtn" class="btn-tool" title="Toggle Theme">
           <i class="fa-solid fa-moon" id="themeIcon"></i>
         </button>
 
-        <!-- Reset Button -->
-        <button id="resetDataBtn" class="btn-tool btn-tool-danger" title="Reset All Data" aria-label="Reset Data">
+        <button id="resetDataBtn" class="btn-tool btn-tool-danger" title="Reset All Data">
           <i class="fa-solid fa-rotate-left"></i>
         </button>
       </div>
     </div>
   </header>
 
-  <!-- Critical Liquidity Risk Alert Banner (Phase 3 Requirement) -->
-  <div id="thresholdAlertBanner" class="risk-banner d-none" role="alert" aria-live="assertive">
+  <div id="thresholdAlertBanner" class="risk-banner d-none">
     <div class="risk-banner-inner">
       <div class="risk-banner-icon">
         <i class="fa-solid fa-triangle-exclamation"></i>
       </div>
       <div class="risk-banner-content">
-        <strong id="alertTitle" class="risk-banner-headline">Liquidity Buffer Warning</strong>
+        <strong id="alertTitle" class="risk-banner-headline">Warning: Low Balance!</strong>
         <p id="alertMessage" class="risk-banner-detail">
-          Available liquidity has dropped below the 10% safety buffer of monthly allocated salary. Review pending outflows.
+          Your remaining balance is less than 10% of your total salary. Please check your spending.
         </p>
       </div>
     </div>
   </div>
 
-  <!-- Primary Workspace -->
   <main class="app-main">
-    <!-- Executive Financial KPI Row -->
-    <section class="kpi-deck" aria-label="Portfolio Metrics">
-      <!-- Card 1: Total Salary -->
+    <section class="kpi-deck">
       <div class="kpi-card card-income">
         <div class="kpi-top">
           <span class="kpi-caption">Total Salary</span>
@@ -106,12 +82,11 @@
           <span id="totalSalaryDisplay" class="kpi-figure">0.00</span>
         </div>
         <div class="kpi-bottom">
-          <span class="trend-badge trend-neutral" id="salaryStatusTag">Baseline</span>
-          <span class="kpi-subtext">Monthly Inflow</span>
+          <span class="trend-badge trend-neutral" id="salaryStatusTag">Set</span>
+          <span class="kpi-subtext">Monthly Salary</span>
         </div>
       </div>
 
-      <!-- Card 2: Total Expenses -->
       <div class="kpi-card card-spend">
         <div class="kpi-top">
           <span class="kpi-caption">Total Expenses</span>
@@ -124,12 +99,11 @@
           <span id="totalExpensesDisplay" class="kpi-figure">0.00</span>
         </div>
         <div class="kpi-bottom">
-          <span class="trend-badge trend-spend" id="expensePercentageTag">0.0% of Income</span>
-          <span class="kpi-subtext" id="expenseCountHint">0 transactions</span>
+          <span class="trend-badge trend-spend" id="expensePercentageTag">0% of Salary</span>
+          <span class="kpi-subtext" id="expenseCountHint">0 expenses</span>
         </div>
       </div>
 
-      <!-- Card 3: Remaining Balance -->
       <div class="kpi-card card-liquidity" id="remainingBalanceCard">
         <div class="kpi-top">
           <span class="kpi-caption">Remaining Balance</span>
@@ -143,11 +117,10 @@
         </div>
         <div class="kpi-bottom">
           <span class="trend-badge trend-liquidity" id="balanceStatusTag">100% Left</span>
-          <span class="kpi-subtext" id="balanceRatioHint">Fully Funded</span>
+          <span class="kpi-subtext" id="balanceRatioHint">Remaining</span>
         </div>
       </div>
 
-      <!-- Card 4: Savings Ratio -->
       <div class="kpi-card card-ratio">
         <div class="kpi-top">
           <span class="kpi-caption">Savings Rate</span>
@@ -162,16 +135,13 @@
           <div id="savingsProgressBar" class="ratio-bar-fill" style="width: 100%;"></div>
         </div>
         <div class="kpi-bottom">
-          <span class="kpi-subtext" id="savingsStatusHint">Stable capital retention</span>
+          <span class="kpi-subtext" id="savingsStatusHint">Savings</span>
         </div>
       </div>
     </section>
 
-    <!-- Operational Dashboard Grid -->
     <div class="dashboard-grid">
-      <!-- Left Column: Financial Ingestion Forms -->
-      <section class="ops-column" aria-label="Input Forms">
-        <!-- Form Panel 1: Set Monthly Salary -->
+      <section class="ops-column">
         <article class="surface-card">
           <div class="card-head">
             <div class="card-head-title">
@@ -198,9 +168,9 @@
                   required 
                 />
               </div>
-              <div id="salaryErrorMsg" class="field-alert d-none" role="alert">
+              <div id="salaryErrorMsg" class="field-alert d-none">
                 <i class="fa-solid fa-circle-exclamation"></i>
-                <span>Please specify a valid positive salary amount.</span>
+                <span>Please enter a valid salary amount.</span>
               </div>
             </div>
 
@@ -211,17 +181,15 @@
           </form>
         </article>
 
-        <!-- Form Panel 2: Log New Expense -->
         <article class="surface-card">
           <div class="card-head">
             <div class="card-head-title">
               <i class="fa-solid fa-plus-minus head-icon"></i>
-              <h3>Log New Expense</h3>
+              <h3>Add Expense</h3>
             </div>
           </div>
 
           <form id="expenseForm" class="standard-form" novalidate>
-            <!-- Expense Title -->
             <div class="field-unit">
               <label for="expenseNameInput" class="field-label">
                 Expense Name
@@ -231,19 +199,17 @@
                 type="text" 
                 id="expenseNameInput" 
                 class="text-input" 
-                placeholder="e.g. Apex Office Rent, Cloud Hosting, Groceries" 
+                placeholder="e.g. Rent, Groceries, Shopping" 
                 required 
                 maxlength="75"
               />
-              <div id="expenseNameErrorMsg" class="field-alert d-none" role="alert">
+              <div id="expenseNameErrorMsg" class="field-alert d-none">
                 <i class="fa-solid fa-circle-exclamation"></i>
-                <span>Description cannot be empty.</span>
+                <span>Please enter expense name.</span>
               </div>
             </div>
 
-            <!-- Amount & Category Split -->
             <div class="field-split">
-              <!-- Expense Amount -->
               <div class="field-unit">
                 <label for="expenseAmountInput" class="field-label">
                   Expense Amount (<span class="active-currency-label">INR</span>)
@@ -261,40 +227,37 @@
                     required 
                   />
                 </div>
-                <div id="expenseAmountErrorMsg" class="field-alert d-none" role="alert">
+                <div id="expenseAmountErrorMsg" class="field-alert d-none">
                   <i class="fa-solid fa-circle-exclamation"></i>
                   <span>Enter a valid positive number.</span>
                 </div>
               </div>
 
-              <!-- Expense Category -->
               <div class="field-unit">
                 <label for="expenseCategorySelect" class="field-label">Category</label>
                 <select id="expenseCategorySelect" class="text-input select-styled">
-                  <option value="Housing">Housing & Facilities</option>
-                  <option value="Food">Food & Dining</option>
-                  <option value="Utilities">Utilities & Services</option>
-                  <option value="Transportation">Transportation & Travel</option>
-                  <option value="Entertainment">Entertainment & Media</option>
-                  <option value="Healthcare">Healthcare & Insurance</option>
-                  <option value="Education">Education & Courses</option>
-                  <option value="Shopping">Shopping & Hardware</option>
-                  <option value="Other" selected>Miscellaneous & Other</option>
+                  <option value="Housing">Housing</option>
+                  <option value="Food">Food</option>
+                  <option value="Utilities">Utilities</option>
+                  <option value="Transportation">Transportation</option>
+                  <option value="Entertainment">Entertainment</option>
+                  <option value="Healthcare">Healthcare</option>
+                  <option value="Education">Education</option>
+                  <option value="Shopping">Shopping</option>
+                  <option value="Other" selected>Other</option>
                 </select>
               </div>
             </div>
 
             <button type="submit" id="addExpenseBtn" class="btn btn-accent btn-full">
               <i class="fa-solid fa-plus"></i>
-              <span>Record Expense to Ledger</span>
+              <span>Add Expense</span>
             </button>
           </form>
         </article>
       </section>
 
-      <!-- Right Column: Visual Breakdown & Transaction Ledger -->
-      <section class="analytics-column" aria-label="Visualizations and Records">
-        <!-- Visualization Panel: Chart.js Doughnut Breakdown -->
+      <section class="analytics-column">
         <article class="surface-card chart-deck">
           <div class="card-head">
             <div class="card-head-title">
@@ -304,17 +267,16 @@
           </div>
 
           <div class="chart-canvas-wrap">
-            <canvas id="balanceChart" aria-label="Remaining Balance vs Total Expenses Pie Chart" role="img"></canvas>
+            <canvas id="balanceChart"></canvas>
             <div id="emptyChartPlaceholder" class="chart-blank-state d-none">
               <div class="blank-state-ring">
                 <i class="fa-solid fa-chart-pie"></i>
               </div>
-              <h4>No allocation data</h4>
-              <p>Allocate salary and log expenses to generate visual analytics.</p>
+              <h4>No data to display</h4>
+              <p>Add salary and expenses to see the breakdown.</p>
             </div>
           </div>
 
-          <!-- Chart Metric Readouts -->
           <div class="chart-indicators" id="chartMetricsRow">
             <div class="indicator-chip chip-balance">
               <span class="dot-indicator dot-bal"></span>
@@ -329,41 +291,35 @@
           </div>
         </article>
 
-        <!-- Transaction Ledger Panel -->
         <article class="surface-card ledger-deck">
           <div class="card-head">
             <div class="card-head-title">
               <i class="fa-solid fa-receipt head-icon"></i>
-              <h3>Expense Ledger</h3>
+              <h3>Expense List</h3>
               <span id="expensesCounter" class="badge-counter">0</span>
             </div>
 
-            <!-- Search Filter Field -->
             <div class="ledger-filter-wrap">
               <i class="fa-solid fa-magnifying-glass filter-icon"></i>
               <input 
                 type="text" 
                 id="searchExpenseInput" 
                 class="filter-input" 
-                placeholder="Search merchant or category..." 
-                aria-label="Filter expenses"
+                placeholder="Search expenses..." 
               />
             </div>
           </div>
 
-          <!-- Dynamic Expense Transaction List -->
           <div class="ledger-scrollable">
-            <ul id="expensesList" class="ledger-table" aria-label="Transaction List">
-              <!-- Rendered via script.js -->
+            <ul id="expensesList" class="ledger-table">
             </ul>
 
-            <!-- Empty Transaction State -->
             <div id="emptyExpensesState" class="empty-ledger-view">
               <div class="empty-icon-wrap">
                 <i class="fa-solid fa-folder-open"></i>
               </div>
-              <h4 class="empty-title">No transactions recorded</h4>
-              <p class="empty-desc">Use the Log Outflow form to add expenses. Transactions will be logged with automated timestamps and persistent state.</p>
+              <h4 class="empty-title">No expenses added yet</h4>
+              <p class="empty-desc">Add your first expense using the form on the left.</p>
             </div>
           </div>
         </article>
@@ -371,11 +327,9 @@
     </div>
   </main>
 
-  <!-- Interactive Toast Notification Container -->
-  <div id="toastContainer" class="toast-hub" aria-live="polite" aria-atomic="true"></div>
+  <div id="toastContainer" class="toast-hub"></div>
 
-  <!-- Clear Data Confirmation Dialog -->
-  <div id="resetConfirmModal" class="modal-backdrop d-none" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div id="resetConfirmModal" class="modal-backdrop d-none">
     <div class="modal-surface">
       <div class="modal-alert-icon">
         <i class="fa-solid fa-triangle-exclamation"></i>
@@ -391,7 +345,6 @@
     </div>
   </div>
 
-  <!-- Application Footer -->
   <footer class="app-footer">
     <div class="footer-inner">
       <div class="footer-legal">
@@ -404,7 +357,6 @@
     </div>
   </footer>
 
-  <!-- Application Engine -->
   <script src="script.js"></script>
 </body>
 </html>
