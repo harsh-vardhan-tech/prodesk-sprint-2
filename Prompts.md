@@ -1,15 +1,23 @@
 Prompt 1
 
-I need to build the "Cash-Flow" Salary & Expense Tracker module for Sprint 02 using pure Vanilla JavaScript, HTML5, and CSS. First, set up the input architecture for capturing Total Salary (number), Expense Name (text), and Expense Amount (number). When submitted, render the salary on the DOM, calculate Remaining Balance = Total Salary - Total Expenses, dynamically add expenses to the list using document.createElement, and validate inputs so empty or negative numbers are blocked with error states. Make sure inputs are parsed with parseFloat or Number so numbers do not concatenate.
+I am building the "Cash-Flow" Salary and Expense Tracker project for Sprint 2 using pure HTML, CSS, and Vanilla JavaScript. Please help me create the initial dashboard layout. I need two forms on the left side: one form to enter "Total Salary" and another form to enter "Expense Name", "Expense Amount", and a category dropdown. On top, I need summary cards for Total Salary, Total Expenses, Remaining Balance, and Savings Rate. On the right side, add a section for a dynamic chart and an expense list ledger. Please keep the design clean and modern like a fintech dashboard without using any frontend frameworks like React.
 
 Prompt 2
 
-Add Data Persistence and Visualization. Store the salary and expenses array in browser localStorage using JSON.stringify, and retrieve it on page load using JSON.parse so data stays after browser reloads. Add a delete trash button for every expense that removes it from the DOM, updates localStorage, and recalculates the Remaining Balance immediately. Also integrate Chart.js via CDN to show a dynamic Pie Chart of Remaining Balance vs Total Expenses, and make sure to destroy previous chart instances with .destroy() before re-rendering so the canvas does not duplicate.
+Now help me write the core JavaScript logic for Phase 1. When the user submits the salary form, display the salary on the Total Salary card. When the user submits an expense, dynamically create and append a new list item to the expense list using document.createElement. Calculate and display: Total Salary - Total Expenses = Remaining Balance. Also, add strict validation: if the inputs are empty or negative numbers, prevent execution and show inline error messages under the input fields. Make sure to parse the input values with parseFloat or Number so the numbers do not concatenate as strings like "10 + 10 = 1010".
 
 Prompt 3
 
-Implement the Phase 3 stretch goals. First, add a "Download Report" button using jsPDF and jspdf-autotable to export the full financial statement with salary, expenses, and remaining balance into a clean PDF. Second, connect the keyless Frankfurter API to allow toggling currencies between INR, USD, EUR, and GBP with real-time conversion. Third, implement a critical threshold alert: if the remaining balance drops below 10% of the total salary or goes into a deficit, turn the balance text red and show an alert warning banner.
+I want to implement data persistence using LocalStorage. How do I serialize and save both the Total Salary and the Expenses array into browser localStorage so that the data stays saved even when the user refreshes or reloads the page? Please make sure it does not save as [object Object]. Also, explain how to retrieve and render this data on page load using JSON.parse. In addition, add a working delete action (trash icon) for each expense in the list so that clicking it removes the item from the DOM, updates localStorage, and immediately recalculates the Remaining Balance.
 
 Prompt 4
 
-Review the user interface and styling. Make it look like a clean modern fintech dashboard with dark and light mode toggle, financial KPI cards (Total Salary, Total Expenses, Remaining Balance, Savings Rate), category icons, an expense filter search bar, and toast notifications. Ensure zero framework dependencies and no console errors.
+Now help me integrate Chart.js using the CDN script tag. I want to render a dynamic Pie Chart showing "Remaining Balance vs. Total Expenses". The chart should update automatically whenever a new expense is added or deleted. Please explain how to handle the Chart.js lifecycle properly using the .destroy() method so the canvas does not glitch or duplicate when re-rendering with new data.
+
+Prompt 5
+
+I want to add the Phase 3 features. First, integrate a "Download Report" button using the jsPDF and jspdf-autotable CDN libraries so the user can export their salary, expense list, and remaining balance as a formatted PDF statement. Second, connect a third-party free currency API (like Frankfurter API) to allow the user to toggle between INR, USD, EUR, and GBP in real time without needing a paid API key. Please also add fallback rates in case the user is offline.
+
+Prompt 6
+
+Implement the threshold alert requirement. If the Remaining Balance drops below 10% of the Total Salary, or if it goes into a deficit (negative balance), trigger a critical warning by turning the balance text red and displaying a warning alert banner at the top of the dashboard. When the balance is healthy above 10%, keep the banner hidden. Also add a dark and light theme toggle button, an expense search filter, and check that the entire code runs cleanly in pure Vanilla JavaScript with zero console errors.
