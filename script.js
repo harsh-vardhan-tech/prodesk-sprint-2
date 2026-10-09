@@ -647,17 +647,17 @@
       const dispBalance = convertFromBase(remainingBalanceINR);
 
       // Header Block
-      doc.setFillColor(15, 23, 42); // Enterprise Navy
+      doc.setFillColor(15, 23, 42); // Navy
       doc.rect(0, 0, 210, 36, 'F');
 
       doc.setTextColor(255, 255, 255);
       doc.setFontSize(20);
       doc.setFont('helvetica', 'bold');
-      doc.text('CashFlow Financial Statement', 14, 20);
+      doc.text('Cash-Flow Financial Statement', 14, 20);
 
       doc.setFontSize(9);
       doc.setFont('helvetica', 'normal');
-      doc.text(`Certified Client-Side Treasury Report | Generated: ${today}`, 14, 28);
+      doc.text(`Salary & Expense Tracker Report | Generated: ${today}`, 14, 28);
 
       // Financial Overview Table
       doc.setTextColor(15, 23, 42);
@@ -666,11 +666,11 @@
       doc.text('Executive Summary', 14, 48);
 
       const summaryTableData = [
-        ['Allocated Inflow', `${currencyCode} ${formatMoney(dispSalary)}`],
-        ['Cumulative Outflows', `${currencyCode} ${formatMoney(dispExpenses)}`],
-        ['Net Available Balance', `${currencyCode} ${formatMoney(dispBalance)}`],
-        ['Capital Retention Ratio', `${totalSalaryINR > 0 ? Math.round((remainingBalanceINR / totalSalaryINR) * 100) : 0}%`],
-        ['Liquidity Status', remainingBalanceINR < 0 ? 'Deficit (Over-budget)' : (remainingBalanceINR < totalSalaryINR * 0.1 ? 'Critical Buffer Warning' : 'Healthy Reserve')]
+        ['Total Salary', `${currencyCode} ${formatMoney(dispSalary)}`],
+        ['Total Expenses', `${currencyCode} ${formatMoney(dispExpenses)}`],
+        ['Remaining Balance', `${currencyCode} ${formatMoney(dispBalance)}`],
+        ['Savings Rate', `${totalSalaryINR > 0 ? Math.round((remainingBalanceINR / totalSalaryINR) * 100) : 0}%`],
+        ['Status', remainingBalanceINR < 0 ? 'Deficit (Over-budget)' : (remainingBalanceINR < totalSalaryINR * 0.1 ? 'Low Balance Warning' : 'Healthy Budget')]
       ];
 
       doc.autoTable({
@@ -687,7 +687,7 @@
       const nextY = doc.lastAutoTable.finalY + 12;
       doc.setFontSize(13);
       doc.setFont('helvetica', 'bold');
-      doc.text(`Itemized Outflow Ledger (${state.expenses.length} records)`, 14, nextY);
+      doc.text(`Itemized Expenses (${state.expenses.length} records)`, 14, nextY);
 
       const expenseRows = state.expenses.map((item, index) => {
         const itemConverted = convertFromBase(item.amount);
@@ -708,7 +708,7 @@
 
       doc.autoTable({
         startY: nextY + 4,
-        head: [['#', 'Merchant / Description', 'Category', 'Date', 'Amount']],
+        head: [['#', 'Expense Name', 'Category', 'Date', 'Amount']],
         body: expenseRows,
         theme: 'striped',
         headStyles: { fillColor: [30, 41, 59], textColor: 255, fontStyle: 'bold' },
@@ -720,11 +720,11 @@
       const pageHeight = doc.internal.pageSize.height;
       doc.setFontSize(8);
       doc.setTextColor(148, 163, 184);
-      doc.text('CashFlow Enterprise Module • Client-Side Cryptographic Local Persistence • Harsh Vardhan', 14, pageHeight - 10);
+      doc.text('Cash-Flow • Salary & Expense Tracker • Harsh Vardhan', 14, pageHeight - 10);
 
       const fileName = `CashFlow_Statement_${new Date().toISOString().split('T')[0]}.pdf`;
       doc.save(fileName);
-      showToast('Certified PDF Statement exported successfully.', 'success');
+      showToast('PDF report downloaded successfully.', 'success');
     } catch (err) {
       console.error('PDF generation failure:', err);
       showToast('Failed to generate PDF statement.', 'danger');
@@ -769,7 +769,7 @@
     localStorage.removeItem(STORAGE_KEY);
     closeResetModal();
     renderApp();
-    showToast('Ledger and local storage state purged.', 'info');
+    showToast('All data has been reset.', 'info');
   }
 
   // --------------------------------------------------------------------------
@@ -813,7 +813,7 @@
         state.currentCurrency = e.target.value;
         saveStateToStorage();
         renderApp();
-        showToast(`Currency shifted to ${state.currentCurrency}`, 'info');
+        showToast(`Currency changed to ${state.currentCurrency}`, 'info');
       });
     }
     if (DOM.downloadPdfBtn) {
