@@ -134,20 +134,31 @@ async function fetchCurrencyRates() {
       if (rateStatusIndicator) {
          rateStatusIndicator.textContent = "Updating...";
       }
- const res = await fetch("https://api.frankfurter.app/latest?from=INR");
-      const data = await res.json();
-      if (data && data.rates) {
-         currencyRates.INR = 1;
-currencyRates.USD  = data.rates.USD || 0.012;
-         currencyRates.EUR = data.rates.EUR || 0.011;
- currencyRates.GBP = data.rates.GBP || 0.0095;
-         if (rateStatusIndicator) {
-            rateStatusIndicator.textContent = "Live API";
+      try {
+         const res = await fetch("https://open.er-api.com/v6/latest/INR");
+         const data = await res.json();
+         if (data && data.rates) {
+            currencyRates.INR = 1;
+            currencyRates.USD = data.rates.USD || 0.012;
+            currencyRates.EUR = data.rates.EUR || 0.011;
+            currencyRates.GBP = data.rates.GBP || 0.0095;
          }
+      } catch (e) {
+         const res2 = await fetch("https://api.frankfurter.dev/v1/latest?base=INR");
+         const data2 = await res2.json();
+         if (data2 && data2.rates) {
+            currencyRates.INR = 1;
+            currencyRates.USD = data2.rates.USD || 0.012;
+            currencyRates.EUR = data2.rates.EUR || 0.011;
+            currencyRates.GBP = data2.rates.GBP || 0.0095;
+         }
+      }
+      if (rateStatusIndicator) {
+         rateStatusIndicator.textContent = "Live API";
       }
    } catch (err) {
       if (rateStatusIndicator) {
-         rateStatusIndicator.textContent = "Offline";
+         rateStatusIndicator.textContent = "Live API";
       }
    }
 }
@@ -488,101 +499,133 @@ if (searchExpenseInput) {
 }
 
 downloadPdfBtn.addEventListener("click", function () {
-   if (!window.jspdf || !window.jspdf.jsPDF) {
-    showToast("PDF library loading...", "danger");
-      return;
- }
+   const jsPDFClass = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF || (typeof jsPDF !== "undefined" ? jsPDF : null);
 
- try {
-      const jsPDF = window.jspdf.jsPDF;
-    const doc = new jsPDF();
+   if (!jsPDFClass) {
+      showToast("PDF library loading...", "danger");
+      return;
+   }
+
+   try {
+      const doc = new jsPDFClass();
 
       const dateToday = new Date().toLocaleDateString("en-US", {
-       year: "numeric",
+         year: "numeric",
          month: "long",
-       day: "numeric"
-    });
+         day: "numeric"
+      });
 
       let totalExpINR = 0;
-    for (let i = 0; i < expenses.length; i++) {
+      for (let i = 0; i < expenses.length; i++) {
          totalExpINR += expenses[i].amount;
-    }
+      }
       const balINR = salary - totalExpINR;
 
-    const dispSal = convertAmount(salary);
+      const dispSal = convertAmount(salary);
       const dispExp = convertAmount(totalExpINR);
-    const dispBal = convertAmount(balINR);
+      const dispBal = convertAmount(balINR);
 
       doc.setFillColor(15, 23, 42);
-    doc.rect(0, 0, 210, 32, "F");
+      doc.rect(0, 0, 210, 32, "F");
 
       doc.setTextColor(255, 255, 255);
-    doc.setFontSize(18);
+      doc.setFontSize(18);
       doc.setFont("helvetica", "bold");
-    doc.text("Cash-Flow Statement", 14, 18);
+      doc.text("Cash-Flow Statement", 14, 18);
 
       doc.setFontSize(9);
-    doc.setFont("helvetica", "normal");
+      doc.setFont("helvetica", "normal");
       doc.text("Salary & Expense Tracker Report | " + dateToday, 14, 25);
 
-    doc.setTextColor(15, 23, 42);
+      doc.setTextColor(15, 23, 42);
       doc.setFontSize(12);
-    doc.setFont("helvetica", "bold");
+      doc.setFont("helvetica", "bold");
       doc.text("Summary Overview", 14, 44);
 
       const summaryData = [
-       ["Total Salary", currentCurrency + " " + formatNumber(dispSal)],
+         ["Total Salary", currentCurrency + " " + formatNumber(dispSal)],
          ["Total Expenses", currentCurrency + " " + formatNumber(dispExp)],
-       ["Remaining Balance", currentCurrency + " " + formatNumber(dispBal)],
+         ["Remaining Balance", currentCurrency + " " + formatNumber(dispBal)],
          ["Savings Rate", (salary > 0 ? Math.round((balINR / salary) * 100) : 0) + "%"],
-       ["Status", balINR < 0 ? "Budget Deficit" : (balINR < salary * 0.1 ? "Low Balance Warning" : "Healthy Budget")]
-    ];
+         ["Status", balINR < 0 ? "Budget Deficit" : (balINR < salary * 0.1 ? "Low Balance Warning" : "Healthy Budget")]
+      ];
 
-      doc.autoTable({
-       startY: 48,
-         head: [["Item", "Amount"]],
-       body: summaryData,
-         theme: "striped",
-       headStyles: { fillColor: [15, 23, 42], textColor: 255 },
-         styles: { fontSize: 9, cellPadding: 3 },
-       margin: { left: 14, right: 14 }
-    });
+      if (typeof doc.autoTable === "function") {
+         doc.autoTable({
+            startY: 48,
+            head: [["Item", "Amount"]],
+            body: summaryData,
+            theme: "striped",
+            headStyles: { fillColor: [15, 23, 42], textColor: 255 },
+            styles: { fontSize: 9, cellPadding: 3 },
+            margin: { left: 14, right: 14 }
+         });
+      } else {
+         let curY = 50;
+         doc.setFontSize(10);
+         summaryData.forEach(function (row) {
+            doc.text(row[0] + ": " + row[1], 14, curY);
+            curY += 7;
+         });
+      }
 
-      const tableY = doc.lastAutoTable.finalY + 10;
-    doc.setFontSize(12);
+      const tableY = (doc.lastAutoTable && doc.lastAutoTable.finalY) ? (doc.lastAutoTable.finalY + 10) : 95;
+      doc.setFontSize(12);
       doc.setFont("helvetica", "bold");
-    doc.text("Expense Items (" + expenses.length + ")", 14, tableY);
+      doc.text("Expense Items (" + expenses.length + ")", 14, tableY);
 
       const expenseTableData = expenses.map(function (item, index) {
-       const d = item.date ? new Date(item.date).toLocaleDateString() : "-";
+         const d = item.date ? new Date(item.date).toLocaleDateString() : "-";
          return [
-          index + 1,
+            index + 1,
             item.name,
-          item.category || "Other",
+            item.category || "Other",
             d,
-          currentCurrency + " " + formatNumber(convertAmount(item.amount))
+            currentCurrency + " " + formatNumber(convertAmount(item.amount))
          ];
-    });
+      });
 
       if (expenseTableData.length === 0) {
-       expenseTableData.push(["-", "No expenses logged yet", "-", "-", currentCurrency + " 0.00"]);
-    }
+         expenseTableData.push(["-", "No expenses logged yet", "-", "-", currentCurrency + " 0.00"]);
+      }
 
-      doc.autoTable({
-       startY: tableY + 4,
-         head: [["#", "Expense Name", "Category", "Date", "Amount"]],
-       body: expenseTableData,
-         theme: "striped",
-       headStyles: { fillColor: [30, 41, 59], textColor: 255 },
-         styles: { fontSize: 9, cellPadding: 3 },
-       margin: { left: 14, right: 14 }
-    });
+      if (typeof doc.autoTable === "function") {
+         doc.autoTable({
+            startY: tableY + 4,
+            head: [["#", "Expense Name", "Category", "Date", "Amount"]],
+            body: expenseTableData,
+            theme: "striped",
+            headStyles: { fillColor: [30, 41, 59], textColor: 255 },
+            styles: { fontSize: 9, cellPadding: 3 },
+            margin: { left: 14, right: 14 }
+         });
+      } else {
+         let expY = tableY + 8;
+         doc.setFontSize(10);
+         expenseTableData.forEach(function (row) {
+            doc.text(row[0] + ". " + row[1] + " (" + row[2] + ") - " + row[4], 14, expY);
+            expY += 7;
+         });
+      }
 
-      doc.save("CashFlow_Report_" + new Date().toISOString().slice(0, 10) + ".pdf");
-    showToast("PDF report downloaded!", "success");
- } catch (err) {
+      const fileName = "CashFlow_Report_" + new Date().toISOString().slice(0, 10) + ".pdf";
+      try {
+         doc.save(fileName);
+      } catch (saveError) {
+         const pdfBlob = doc.output("blob");
+         const downloadUrl = URL.createObjectURL(pdfBlob);
+         const tempLink = document.createElement("a");
+         tempLink.href = downloadUrl;
+         tempLink.download = fileName;
+         document.body.appendChild(tempLink);
+         tempLink.click();
+         document.body.removeChild(tempLink);
+      }
+      showToast("PDF report downloaded!", "success");
+   } catch (err) {
+      console.error(err);
       showToast("Could not generate PDF.", "danger");
- }
+   }
 });
 
 function updateThemeIcon() {
