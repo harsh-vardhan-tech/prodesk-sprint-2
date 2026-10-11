@@ -1,28 +1,22 @@
 let salary = 0;
-let expenses = [];
-let currentCurrency = "INR";
-
+let expenses = []; let currentCurrency = "INR";
 let currencyRates = {
   INR: 1,
   USD: 0.012,
   EUR: 0.011,
   GBP: 0.0095
 };
-
 const currencySymbols = {
-  INR: "₹",
-  USD: "$",
-  EUR: "€",
+  INR: "₹", USD: "$", EUR: "€",
   GBP: "£"
 };
-
 const categoryIcons = {
   Housing: "fa-house",
-  Food: "fa-utensils",
+Food: "fa-utensils",
   Utilities: "fa-bolt",
-  Transportation: "fa-car-side",
+Transportation: "fa-car-side",
   Entertainment: "fa-film",
-  Healthcare: "fa-heart-pulse",
+Healthcare: "fa-heart-pulse",
   Education: "fa-graduation-cap",
   Shopping: "fa-bag-shopping",
   Other: "fa-layer-group"
@@ -30,45 +24,36 @@ const categoryIcons = {
 
 const categoryClasses = {
   Housing: "cat-housing",
-  Food: "cat-food",
+ Food: "cat-food",
   Utilities: "cat-utilities",
   Transportation: "cat-transportation",
-  Entertainment: "cat-entertainment",
+ Entertainment: "cat-entertainment",
   Healthcare: "cat-healthcare",
-  Education: "cat-education",
-  Shopping: "cat-shopping",
+  Education: "cat-education", Shopping: "cat-shopping",
   Other: "cat-other"
 };
-
 let chartInstance = null;
-
-const salaryForm = document.getElementById("salaryForm");
-const salaryInput = document.getElementById("salaryInput");
+const salaryForm = document.getElementById("salaryForm"); const salaryInput = document.getElementById("salaryInput");
 const salaryErrorMsg = document.getElementById("salaryErrorMsg");
 const totalSalaryDisplay = document.getElementById("totalSalaryDisplay");
-
 const expenseForm = document.getElementById("expenseForm");
 const expenseNameInput = document.getElementById("expenseNameInput");
 const expenseAmountInput = document.getElementById("expenseAmountInput");
 const expenseCategorySelect = document.getElementById("expenseCategorySelect");
 const expenseNameErrorMsg = document.getElementById("expenseNameErrorMsg");
 const expenseAmountErrorMsg = document.getElementById("expenseAmountErrorMsg");
-
 const totalExpensesDisplay = document.getElementById("totalExpensesDisplay");
 const remainingBalanceDisplay = document.getElementById("remainingBalanceDisplay");
 const remainingBalanceCard = document.getElementById("remainingBalanceCard");
 const savingsRateDisplay = document.getElementById("savingsRateDisplay");
 const savingsProgressBar = document.getElementById("savingsProgressBar");
-
-const expensesList = document.getElementById("expensesList");
-const emptyExpensesState = document.getElementById("emptyExpensesState");
+const   expensesList = document.getElementById("expensesList");
+const  emptyExpensesState = document.getElementById("emptyExpensesState");
 const expensesCounter = document.getElementById("expensesCounter");
 const searchExpenseInput = document.getElementById("searchExpenseInput");
-
 const thresholdAlertBanner = document.getElementById("thresholdAlertBanner");
 const alertTitle = document.getElementById("alertTitle");
 const alertMessage = document.getElementById("alertMessage");
-
 const currencySelect = document.getElementById("currencySelect");
 const rateStatusIndicator = document.getElementById("rateStatusIndicator");
 const downloadPdfBtn = document.getElementById("downloadPdfBtn");
@@ -230,17 +215,17 @@ function render() {
     thresholdAlertBanner.classList.remove("d-none");
     alertTitle.textContent = "Alert: Budget Deficit!";
     alertMessage.textContent = "Total expenses have exceeded salary by " + symbol + formatNumber(Math.abs(dispBalance)) + ".";
-    savingsProgressBar.style.backgroundColor = "var(--rose-600)";
+    savingsProgressBar.style.backgroundColor = "#e11d48";
   } else if (salary > 0 && remainingBalanceINR < tenPercentLimit) {
     remainingBalanceCard.classList.add("threshold-critical");
     thresholdAlertBanner.classList.remove("d-none");
     alertTitle.textContent = "Warning: Low Balance (< 10%)";
     alertMessage.textContent = "Remaining balance is less than 10% of total salary. Please check expenses.";
-    savingsProgressBar.style.backgroundColor = "var(--amber-500)";
+    savingsProgressBar.style.backgroundColor = "#f59e0b";
   } else {
     remainingBalanceCard.classList.remove("threshold-critical");
     thresholdAlertBanner.classList.add("d-none");
-    savingsProgressBar.style.backgroundColor = "var(--emerald-600)";
+    savingsProgressBar.style.backgroundColor = "#10b981";
   }
 
   legendBalanceVal.textContent = symbol + formatNumber(Math.max(0, dispBalance));
