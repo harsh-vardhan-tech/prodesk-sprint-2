@@ -1,9 +1,7 @@
-# Cash-Flow: Salary & Expense Tracker
+# Cash-Flow: Salary and Expense Tracker
 
-I built this salary and expense tracker dashboard for the Prodesk IT internship Sprint 02 (Logic & Data).
-
+check my html find mistake and tell me how to fixx it and also cehck my css errors  
 ## What is this project?
-
 Cash-Flow helps users track their monthly salary, log daily expenses, and view real-time calculations. It calculates the remaining balance dynamically and shows spending habits through an interactive pie chart. All data stays saved in the browser even after refreshing the page, and users can export their statement as a PDF report.
 
 ## Technologies Used
