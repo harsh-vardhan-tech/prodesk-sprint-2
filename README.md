@@ -3,6 +3,10 @@
 this is my sprint 2 project for prodesk IT internship i built it using html css and javascript only no react or any framework
 
 
+https://github.com/user-attachments/assets/28fc17da-c21e-4f6e-84ea-cbc6bdc66a2a
+
+
+
 ## what this project does
 
 basically its a salary and expense tracker where you enter your monthly salary and then keep adding expenses like rent food shopping etc and it shows your remaining balance in real time with a pie chart everything saves in localstorage so even if you close the browser data stays there you can also download a pdf report of your full statement
