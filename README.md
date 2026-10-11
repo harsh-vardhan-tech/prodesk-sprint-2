@@ -1,55 +1,54 @@
 # CashFlow Salary and Expense Tracker
 
-I made this project for Prodesk IT internship sprint 2 using HTML CSS and JavaScript
+this is my sprint 2 project for prodesk IT internship i built it using html css and javascript only no react or any framework
 
 
-## What is this project
+## what this project does
 
-CashFlow helps user track monthly salary add daily expenses and see balance in real time It calculates remaining balance and savings rate and shows an interactive pie chart All data stays saved in browser localstorage after page refresh and user can also download statement as a PDF report
-
-
-## Technologies Used
-
-HTML
-CSS Flexbox and Grid
-Vanilla JavaScript
-LocalStorage for saving data
-Chart js for pie chart
-jsPDF and AutoTable for PDF report
-Frankfurter API for live currency exchange
+basically its a salary and expense tracker where you enter your monthly salary and then keep adding expenses like rent food shopping etc and it shows your remaining balance in real time with a pie chart everything saves in localstorage so even if you close the browser data stays there you can also download a pdf report of your full statement
 
 
-## Main Features
+## what i used
 
-Set monthly salary with instant card update
-Add daily expenses with name amount category and date
-Real time calculation total salary minus total expenses equal remaining balance
-Input validation for empty fields and positive numbers
-LocalStorage saves data on page reload
-Delete button with trash icon removes expense and updates balance instantly
-Dynamic pie chart for remaining balance vs total expenses
-Download PDF statement report
-Currency switcher for INR USD EUR GBP
-Warning alert banner when balance is less than 10 percent or negative
-Dark and light theme toggle button
-Search filter to find expenses in the list
+html for the page structure
+css for styling and making it responsive
+vanilla javascript for all the logic
+localstorage for saving salary and expenses
+chart js cdn for the pie chart
+jspdf and autotable cdn for pdf download
+open er api and frankfurter api for live currency rates
 
 
-## Project Files
+## features i added
 
-index html for dashboard layout forms and chart
-style css for layout responsive design and colors
-script js for logic calculations localstorage and chart
-Prompts md for prompts used
-README md for project documentation
+set monthly salary and it shows on the dashboard card
+add expenses with name amount and category
+it calculates total salary minus total expenses and shows remaining balance
+if you put empty or negative number it shows error below the input
+localstorage saves everything so data stays after page refresh
+each expense has a delete button that removes it and updates balance
+pie chart showing remaining balance vs total expenses
+download pdf report with summary table and expense list
+currency change option for INR USD EUR GBP using live api
+warning alert banner when balance goes below 10 percent of salary
+dark mode and light mode toggle
+search bar to filter expenses by name or category
 
 
-## AI Assistance
+## project files
 
-I used AI to check bugs and errors in my code and to understand javascript logic and improvements Colors and layout was decided by me
+index html has the full dashboard layout with forms cards chart and list
+style css has all the styling colors responsive design dark mode
+script js has all the javascript logic calculations localstorage chart and pdf
+Prompts md has the prompts i used during development
+README md is this file
 
 
-## How to Run Locally
+## ai help
 
-Open index html in any web browser
-Or use live server in vs code to run it
+i used ai to help me find bugs in my code and to understand how javascript functions work like localstorage json stringify chart js destroy method and jspdf the design colors and layout i decided myself
+
+
+## how to run
+
+just open index html in browser or use live server extension in vs code
