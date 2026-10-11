@@ -51,7 +51,7 @@
     <div class ="alert-inner">
 <i class ="fa-solid fa-triangle-exclamation alert-icon"></i>
       <div class ="alert-content">   <strong id ="alertTitle">Warning: Low Balance!</strong>
-        <p id ="alertMessage">Your remaining balance is less than 10% of your total salary. Please check your spending.</p>
+           <p id ="alertMessage">Your remaining balance is less than 10% of your total salary. Please check your spending.</p>
   </div> 
 </div>
 </div>
@@ -75,9 +75,9 @@
   <span class ="card-title">Total Expenses</span>
    <div class ="card-icon icon-expense"><i class ="fa-solid fa-arrow-trend-up"></i></div>
         </div>
-        <div class ="card-amount">
+ <div class ="card-amount">
           <span class ="currency-symbol">₹</span> <span id ="totalExpensesDisplay">0.00</span>
-        </div>
+   </div>
      <div   class ="card-footer">
           <span class ="badge badge-danger" id ="expensePercentageTag">0% of Salary</span>
       <span  class ="subtext" id ="expenseCountHint">0 expenses</span>
@@ -95,176 +95,145 @@
        <span class ="badge badge-success" id ="balanceStatusTag">100% Left</span>
           <span class ="subtext" id ="balanceRatioHint">Remaining</span>
         </div>
-</div>
-
-      <div class ="card card-savings">
-        <div class ="card-header">
-          <span class ="card-title">Savings Rate</span>
-          <div class ="card-icon icon-savings"><i class ="fa-solid fa-chart-line"></i></div>
+      </div>
+<div class ="card card-savings">
+    <div class ="card-header">
+    <span class ="card-title">Savings Rate</span>
+  <div class ="card-icon icon-savings"><i class ="fa-solid fa-chart-line"></i></div>
         </div>
-        <div class ="card-amount"> <span id ="savingsRateDisplay">100%</span> </div>
-        <div class ="progress-bar">
+ <div class ="card-amount"> <span id ="savingsRateDisplay">100%</span> </div>
+    <div class ="progress-bar">
           <div id ="savingsProgressBar" class ="progress-fill" style ="width: 100%;"></div>
-        </div>
-        <div class ="card-footer"> <span class ="subtext" id ="savingsStatusHint">Savings</span> </div>
+  </div>
+           <div class ="card-footer"> <span class ="subtext" id ="savingsStatusHint">Savings</span> </div>
       </div>
     </div>
-
-
     <div class ="content-grid">
-
-      <div class ="left-column">
+  <div class ="left-column">
         <div class ="card form-card">
-          <div class ="card-title-row">
+ <div class ="card-title-row">
             <i class ="fa-solid fa-wallet"></i> <h3>Set Total Salary</h3>
-          </div>
-
+   </div>
           <form id ="salaryForm">
-            <div class ="form-group">
+  <div class ="form-group">
               <label for ="salaryInput">Total Salary (<span class ="active-currency-label">INR</span>) *</label>
-              <div class ="input-group">
+      <div class ="input-group">
                 <span class ="currency-symbol">₹</span>
-                <input type ="number" id ="salaryInput" class ="form-control" placeholder ="50000" min ="0.01" step ="any" required>
-              </div>
+ <input type ="number" id ="salaryInput" class ="form-control" placeholder ="50000" min ="0.01" step ="any" required>
+   </div>
               <div id ="salaryErrorMsg" class ="error-msg d-none">
                 <i class ="fa-solid fa-circle-exclamation"></i> <span>Please enter a valid salary amount.</span>
-              </div>
+ </div>
             </div>
-
-            <button type ="submit" id ="saveSalaryBtn" class ="btn btn-primary btn-block">
+ <button type ="submit" id ="saveSalaryBtn" class ="btn btn-primary btn-block">
               <i class ="fa-solid fa-check"></i> Save Total Salary
-            </button>
+  </button>
           </form>
         </div>
-
-
         <div class ="card form-card">
-          <div class ="card-title-row">
-            <i class ="fa-solid fa-plus-minus"></i> <h3>Add Expense</h3>
+   <div class ="card-title-row">
+      <i class ="fa-solid fa-plus-minus"></i> <h3>Add Expense</h3>
           </div>
-
-          <form id ="expenseForm">
-            <div class ="form-group">
+ <form id ="expenseForm">
+     <div class ="form-group">
               <label for ="expenseNameInput">Expense Name *</label>
-              <input type ="text" id ="expenseNameInput" class ="form-control" placeholder ="e.g. Rent, Groceries, Shopping" required maxlength ="75">
+ <input type ="text" id ="expenseNameInput" class ="form-control" placeholder ="e.g. Rent, Groceries, Shopping" required maxlength ="75">
               <div id ="expenseNameErrorMsg" class ="error-msg d-none">
-                <i class ="fa-solid fa-circle-exclamation"></i> <span>Please enter expense name.</span>
+    <i class ="fa-solid fa-circle-exclamation"></i> <span>Please enter expense name.</span>
               </div>
             </div>
-
-            <div class ="form-row">
+ <div class ="form-row">
               <div class ="form-group col-half">
                 <label for ="expenseAmountInput">Expense Amount (<span class ="active-currency-label">INR</span>) *</label>
-                <div class ="input-group">
-                  <span class ="currency-symbol">₹</span>
+     <div class ="input-group">
+   <span class ="currency-symbol">₹</span>
                   <input type ="number" id ="expenseAmountInput" class ="form-control" placeholder ="15000" min ="0.01" step ="any" required>
-                </div>
-                <div id ="expenseAmountErrorMsg" class ="error-msg d-none">
-                  <i class ="fa-solid fa-circle-exclamation"></i> <span>Enter a valid positive number.</span>
-                </div>
-              </div>
-
+      </div>
+    <div id ="expenseAmountErrorMsg" class ="error-msg d-none">
+      <i class ="fa-solid fa-circle-exclamation"></i> <span>Enter a valid positive number.</span>
+ </div>   </div>
               <div class ="form-group col-half">
                 <label for ="expenseCategorySelect">Category</label>
-                <select id ="expenseCategorySelect" class ="form-control">
-                  <option value ="Housing">Housing</option>
-                  <option value ="Food">Food</option>
-                  <option value ="Utilities">Utilities</option>
-                  <option value ="Transportation">Transportation</option>
-                  <option value ="Entertainment">Entertainment</option>
-                  <option value ="Healthcare">Healthcare</option>
-                  <option value ="Education">Education</option>
-                  <option value ="Shopping">Shopping</option>
+         <select id ="expenseCategorySelect" class ="form-control">
+          <option value ="Housing">Housing</option>
+<option value ="Food">Food</option>
+             <option value = "Utilities">Utilities</option>
+                 <option value   ="Transportation">Transportation</option>
+          <option value  ="Entertainment">Entertainment</option>
+ <option  value ="Healthcare">Healthcare</option>
+                  <option  value ="Education">Education</option>
+        <option   value ="Shopping">Shopping</option>
                   <option value ="Other" selected>Other</option>
-                </select>
-              </div>
-            </div>
-
-            <button type ="submit" id ="addExpenseBtn" class ="btn btn-accent btn-block">
-              <i class ="fa-solid fa-plus"></i> Add Expense
-            </button>
+      </select>
+    </div>
+</div>
+ <button type ="submit" id ="addExpenseBtn" class ="btn btn-accent btn-block">
+                 <i class ="fa-solid fa-plus"></i> Add Expense
+    </button>
           </form>
-        </div>
+  </div>
       </div>
-
-
-      <div class ="right-column">
-        <div class ="card chart-card">
+<div class ="right-column">  <div class ="card chart-card">
           <div class ="card-title-row">
-            <i class ="fa-solid fa-chart-pie"></i> <h3>Remaining Balance vs. Total Expenses</h3>
+    <i class ="fa-solid fa-chart-pie"></i> <h3>Remaining Balance vs. Total Expenses</h3>
           </div>
-
           <div class ="chart-wrapper">
             <canvas id ="balanceChart"></canvas>
-            <div id ="emptyChartPlaceholder" class ="empty-chart d-none">
+  <div id ="emptyChartPlaceholder" class ="empty-chart d-none">
               <i class ="fa-solid fa-chart-pie"></i>
               <h4>No data to display</h4>
-              <p>Add salary and expenses to see the breakdown.</p>
+   <p>Add salary and expenses to see the breakdown.</p>
             </div>
           </div>
-
-          <div class ="chart-legend" id ="chartMetricsRow">
-            <div class ="legend-item">
-              <span class ="legend-dot dot-balance"></span> <span>Remaining Balance:</span>
-              <strong id ="legendBalanceVal">0.00</strong>
-            </div>
-            <div class ="legend-item">
+<div  class ="chart-legend" id ="chartMetricsRow">
+     <div class ="legend-item">
+      <span  class ="legend-dot dot-balance"></span> <span>Remaining Balance:</span>
+          <strong id ="legendBalanceVal">0.00</strong>
+     </div>
+  <div class ="legend-item">
               <span class ="legend-dot dot-expense"></span> <span>Total Expenses:</span>
-              <strong id ="legendExpensesVal">0.00</strong>
-            </div>
+   <strong id ="legendExpensesVal">0.00</strong>
+                 </div>
           </div>
-        </div>
-
-
+</div>
         <div class ="card expense-card">
-          <div class ="card-header-row">
-            <div class ="title-with-badge">
+            <div class ="card-header-row">
+  <div class ="title-with-badge" >
               <i class ="fa-solid fa-receipt"></i> <h3>Expense List</h3> <span id ="expensesCounter" class ="badge-count">0</span>
-            </div>
-
-            <div class ="search-box">
-              <i class ="fa-solid fa-magnifying-glass"></i>
-              <input type ="text" id ="searchExpenseInput" placeholder ="Search expenses...">
-            </div>
-          </div>
-
-          <div class ="expense-list-wrapper">
-            <ul id ="expensesList" class ="expense-list"></ul>
-
-            <div id ="emptyExpensesState" class ="empty-state">
-              <i class ="fa-solid fa-folder-open"></i>
-              <h4>No expenses added yet</h4>
-              <p>Add your first expense using the form on the left.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </main>
-
-
-  <div id ="toastContainer" class ="toast-container"></div>
-
-
-  <div id ="resetConfirmModal" class ="modal d-none">
-    <div class ="modal-box">
-      <i class ="fa-solid fa-triangle-exclamation modal-icon"></i>
-      <h3 id ="modalTitle">Reset All Data?</h3>
-      <p>This will reset your total salary, delete all logged expenses, and clear saved data from LocalStorage. Are you sure you want to continue?</p>
-      <div class ="modal-buttons">
-        <button id ="cancelResetBtn" class ="btn btn-secondary" type ="button">Cancel</button>
-        <button id ="confirmResetBtn" class ="btn btn-danger" type ="button">Reset All</button>
-      </div>
-    </div>
   </div>
-
-
-  <footer class = "footer">
-    <div class = "footer-container">
-      <p>&copy; 2026 Cash-Flow. All rights reserved.</p>
+            <div class ="search-box">
+                <i class ="fa-solid fa-magnifying-glass"></i>
+      <input type ="text" id ="searchExpenseInput" placeholder ="Search expenses...">
+            </div>
+          </div>
+<div class ="expense-list-wrapper">
+            <ul id ="expensesList" class ="expense-list"></ul>
+ <div id ="emptyExpensesState" class ="empty-state">
+   <i class ="fa-solid fa-folder-open"></i>
+     <h4>No expenses added yet</h4>
+    <p>Add your first expense using the form on the left.</p>
+  </div>
+ </div>
+         </div>
+      </div>
+        </div>
+  </main>
+  <div id ="toastContainer" class = "toast-container"></div>
+<div id ="resetConfirmModal"  class  ="modal d-none">
+    <div class ="modal-box">
+  <i class  ="fa-solid fa-triangle-exclamation modal-icon"></i>
+      <h3 id ="modalTitle">Reset All Data?</h3>
+<p>This will reset your total salary, delete all logged expenses, and clear saved data from LocalStorage. Are you sure you want to continue?</p>
+      <div class ="modal-buttons">
+ <button id ="cancelResetBtn" class ="btn btn-secondary" type ="button">Cancel</button>
+        <button id ="confirmResetBtn" class ="btn btn-danger" type ="button">Reset All</button>
+          </div>
     </div>
+      </div>
+  <footer class = "footer">
+ <div class = "footer-container">
+       <p>&copy; 2026 Cash-Flow. All rights reserved</p>
+        </div>
   </footer>
-
-</body>
+</body> 
 </html>
