@@ -1,43 +1,49 @@
-# Cash-Flow: Salary and Expense Tracker
+# Cash-Flow Salary and Expense Tracker
 
-check my html find mistake and tell me how to fixx it and also cehck my css errors  
-## What is this project?
-Cash-Flow helps users track their monthly salary, log daily expenses, and view real-time calculations. It calculates the remaining balance dynamically and shows spending habits through an interactive pie chart. All data stays saved in the browser even after refreshing the page, and users can export their statement as a PDF report.
+I made this Cash-Flow salary and expense tracker project for the Prodesk IT internship Sprint 2 deliverable using pure HTML, CSS and Vanilla JavaScript.
+
+## What is this project
+
+Cash-Flow helps users track their monthly salary, add daily expenses and see real time calculations. It calculates remaining balance and savings rate dynamically and displays spending with an interactive pie chart. All data stays saved in the browser LocalStorage after reload, and users can export their statement as a PDF report.
 
 ## Technologies Used
 
-- HTML5
-- CSS3 (Flexbox and Grid)
+- HTML
+- CSS (Flexbox and Grid)
 - Vanilla JavaScript (DOM manipulation and Event Listeners)
-- LocalStorage API (Data persistence)
-- Chart.js (CDN) for dynamic pie chart
-- jsPDF & AutoTable (CDN) for PDF statement export
-- Frankfurter API for live currency conversion (INR, USD, EUR, GBP)
+- LocalStorage API for data persistence
+- Chart.js CDN for pie chart
+- jsPDF and AutoTable CDN for PDF report download
+- Frankfurter API for live currency exchange (INR, USD, EUR, GBP)
 
 ## Main Features
 
-- Set monthly salary with instant DOM update
-- Add expenses dynamically to the ledger with automated dates
-- Real-time balance calculation: `Total Salary - Total Expenses = Remaining Balance`
-- Input validation preventing empty, zero, or negative numbers
-- LocalStorage persistence across browser reloads
-- Delete action (trash icon) for expenses with instant recalculation
-- Dynamic Chart.js pie chart (Remaining Balance vs. Total Expenses)
-- Download PDF report with formatted summary and expense table
-- Real-time currency conversion toggle (INR, USD, EUR, GBP)
-- Critical threshold warning banner and red text when balance is under 10% or negative
+- Set monthly salary with instant card update
+- Add expenses with name, amount, category and date
+- Real time calculation of Total Salary - Total Expenses = Remaining Balance
+- Form validation for empty fields and positive numbers
+- LocalStorage persistence across page refresh
+- Delete action with trash icon that updates balance instantly
+- Dynamic Chart.js pie chart for Remaining Balance vs Total Expenses
+- Download PDF statement report
+- Currency switcher for INR, USD, EUR and GBP
+- Warning alert banner when balance drops below 10% or goes negative
 - Dark and light theme toggle
-- Filter / search box for logged expenses
+- Search filter for expense list
 
 ## Project Files
 
-- `index.html` - dashboard layout, forms, and chart canvas
-- `style.css` - responsive layout, theme colors, and UI styling
-- `script.js` - state calculations, DOM manipulation, LocalStorage, and APIs
+- `index.html` - dashboard layout, forms and chart canvas
+- `style.css` - layout, responsive styling and theme colors
+- `script.js` - calculations, DOM events, LocalStorage and chart logic
 - `Prompts.md` - prompts used during development
 - `README.md` - project overview and documentation
 
+## AI Assistance
+
+I used AI as an assistant for checking bugs, improving CSS, understanding JavaScript logic and reviewing the code. I created the HTML structure, colors, layout and main feature decisions myself.
+
 ## How to Run Locally
 
-1. Open `index.html` in any modern web browser.
-2. Alternatively, run with Live Server in VS Code or any static HTTP server.
+1. Open `index.html` in any browser.
+2. Or use Live Server in VS Code to run the project locally.
