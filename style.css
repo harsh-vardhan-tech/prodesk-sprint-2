@@ -438,7 +438,6 @@ body.theme-dark .card-balance.threshold-critical {
    flex-direction:column;
    gap:20px;
 }
-
 .card-title-row {
    display:flex;
    align-items:center;
