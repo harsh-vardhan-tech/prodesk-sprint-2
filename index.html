@@ -2,55 +2,46 @@
 <html lang ="en">
 <head>
   <meta charset ="UTF-8">
-  <meta name ="viewport" content ="width=device-width, initial-scale=1.0">
-  <title> Cash-Flow | Salary & Expense Tracker </title>
-
-  <link rel ="preconnect" href ="https://fonts.googleapis.com">
-  <link rel ="preconnect" href ="https://fonts.gstatic.com" crossorigin>
-  <link href ="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel ="stylesheet">
-  <link rel ="stylesheet" href ="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-  <link rel ="stylesheet" href ="style.css">
-
-  <script src ="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src ="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src ="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf-plugin-autotable.min.js"></script>
-  <script src ="script.js" defer></script>
-</head>
-<body class ="theme-light">
-
-  <header class ="navbar">
-    <div class ="nav-container">
-      <div class ="logo">
-        <div class ="logo-icon"> <i class ="fa-solid fa-chart-pie"></i> </div>
-        <div class ="logo-text">
-          <h1>Cash-Flow</h1>
-          <p>Salary & Expense Tracker</p>
-        </div>
-      </div>
-
-      <div class ="nav-actions">
+<meta name ="viewport" content ="width=device-width, initial-scale=1.0"  >
+<title> Cash-Flow | Salary & Expense Tracker  </title>
+  <link rel ="preconnect" href ="https://fonts.googleapis.com"  >
+  <link  rel  = "preconnect"  href ="https://fonts.gstatic.com"  crossorigin>
+<link   href =  "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel ="stylesheet">
+  <link rel  ="stylesheet" href   =   "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel =   "stylesheet"  href   ="style.css">
+<script src   ="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script   src ="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src =" https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf-plugin-autotable.min.js"></script>
+  <script src =" script.js"  defer> </script>
+</head> <body class ="theme-light">
+  <header class =  "navbar">
+    <div class ="nav-container"> <div  class  = "logo" >
+        <div class = " logo-icon">  <i class = "fa-solid fa-chart-pie"> </i> </div>
+<div  class  ="logo-text" >
+        <h1>Cash-Flow</h1>
+       <p>Salary & Expense Tracker</p>
+            </div>
+   </div>
+<div class ="nav-actions">
         <div class ="currency-box">
           <span class ="status-dot"></span>
-          <select id ="currencySelect" class ="currency-dropdown">
+     <select id ="currencySelect" class ="currency-dropdown">
             <option value ="INR" selected>INR (₹)</option>
-            <option value ="USD">USD ($)</option>
+       <option value ="USD">USD ($)</option>
             <option value ="EUR">EUR (€)</option>
-            <option value ="GBP">GBP (£)</option>
+       <option value ="GBP">GBP (£)</option>
           </select>
-          <span id ="rateStatusIndicator" class ="rate-badge">Live API</span>
+  <span id ="rateStatusIndicator" class ="rate-badge">Live API</span>
         </div>
 
-        <button id ="downloadPdfBtn" class ="btn btn-pdf" type ="button">
-          <i class ="fa-solid fa-file-pdf"></i>
-          <span>Download Report</span>
+ <button id ="downloadPdfBtn" class ="btn btn-pdf" type ="button">
+   <i class ="fa-solid fa-file-pdf"></i> <span>Download Report</span>
         </button>
 
-        <button id ="themeToggleBtn" class ="btn-icon" title ="Toggle Theme" type ="button">
+<button id ="themeToggleBtn" class ="btn-icon" title ="Toggle Theme" type ="button">
           <i class ="fa-solid fa-moon" id ="themeIcon"></i>
         </button>
-
-        <button id ="resetDataBtn" class ="btn-icon btn-danger-icon" title ="Reset All Data" type ="button">
+  <button id ="resetDataBtn" class ="btn-icon btn-danger-icon" title ="Reset All Data" type ="button">
           <i class ="fa-solid fa-rotate-left"></i>
         </button>
       </div>
@@ -58,14 +49,13 @@
   </header>
 
 
-  <div id ="thresholdAlertBanner" class ="alert-box d-none">
+<div id ="thresholdAlertBanner" class ="alert-box d-none">
     <div class ="alert-inner">
-      <i class ="fa-solid fa-triangle-exclamation alert-icon"></i>
+  <i class ="fa-solid fa-triangle-exclamation alert-icon"></i>
       <div class ="alert-content">
         <strong id ="alertTitle">Warning: Low Balance!</strong>
         <p id ="alertMessage">Your remaining balance is less than 10% of your total salary. Please check your spending.</p>
-      </div>
-    </div>
+      </div> </div>
   </div>
 
 
@@ -74,12 +64,11 @@
     <div class ="cards-grid">
       <div class ="card card-income">
         <div class ="card-header">
-          <span class ="card-title">Total Salary</span>
+       <span class ="card-title">Total Salary</span>
           <div class ="card-icon icon-income"><i class ="fa-solid fa-money-check-dollar"></i></div>
-        </div>
+     </div>
         <div class ="card-amount">
-          <span class ="currency-symbol">₹</span>
-          <span id ="totalSalaryDisplay">0.00</span>
+          <span class ="currency-symbol">₹</span> <span id ="totalSalaryDisplay">0.00</span>
         </div>
         <div class ="card-footer">
           <span class ="badge" id ="salaryStatusTag">Set</span>
@@ -87,32 +76,30 @@
         </div>
       </div>
 
-      <div class ="card card-expense">
+  <div class ="card card-expense">
         <div class ="card-header">
           <span class ="card-title">Total Expenses</span>
-          <div class ="card-icon icon-expense"><i class ="fa-solid fa-arrow-trend-up"></i></div>
+   <div class ="card-icon icon-expense"><i class ="fa-solid fa-arrow-trend-up"></i></div>
         </div>
         <div class ="card-amount">
-          <span class ="currency-symbol">₹</span>
-          <span id ="totalExpensesDisplay">0.00</span>
+          <span class ="currency-symbol">₹</span> <span id ="totalExpensesDisplay">0.00</span>
         </div>
-        <div class ="card-footer">
+     <div class ="card-footer">
           <span class ="badge badge-danger" id ="expensePercentageTag">0% of Salary</span>
           <span class ="subtext" id ="expenseCountHint">0 expenses</span>
-        </div>
+     </div>
       </div>
 
       <div class ="card card-balance" id ="remainingBalanceCard">
         <div class ="card-header">
           <span class ="card-title">Remaining Balance</span>
-          <div class ="card-icon icon-balance" id ="balanceBadge"><i class ="fa-solid fa-shield-halved"></i></div>
+      <div class ="card-icon icon-balance" id ="balanceBadge"><i class ="fa-solid fa-shield-halved"></i></div>
         </div>
         <div class ="card-amount">
-          <span class ="currency-symbol" id ="balanceCurrencySymbol">₹</span>
-          <span id ="remainingBalanceDisplay">0.00</span>
+          <span class ="currency-symbol" id ="balanceCurrencySymbol">₹</span> <span id ="remainingBalanceDisplay">0.00</span>
         </div>
         <div class ="card-footer">
-          <span class ="badge badge-success" id ="balanceStatusTag">100% Left</span>
+       <span class ="badge badge-success" id ="balanceStatusTag">100% Left</span>
           <span class ="subtext" id ="balanceRatioHint">Remaining</span>
         </div>
       </div>
@@ -122,15 +109,11 @@
           <span class ="card-title">Savings Rate</span>
           <div class ="card-icon icon-savings"><i class ="fa-solid fa-chart-line"></i></div>
         </div>
-        <div class ="card-amount">
-          <span id ="savingsRateDisplay">100%</span>
-        </div>
+        <div class ="card-amount"> <span id ="savingsRateDisplay">100%</span> </div>
         <div class ="progress-bar">
           <div id ="savingsProgressBar" class ="progress-fill" style ="width: 100%;"></div>
         </div>
-        <div class ="card-footer">
-          <span class ="subtext" id ="savingsStatusHint">Savings</span>
-        </div>
+        <div class ="card-footer"> <span class ="subtext" id ="savingsStatusHint">Savings</span> </div>
       </div>
     </div>
 
@@ -140,8 +123,7 @@
       <div class ="left-column">
         <div class ="card form-card">
           <div class ="card-title-row">
-            <i class ="fa-solid fa-wallet"></i>
-            <h3>Set Total Salary</h3>
+            <i class ="fa-solid fa-wallet"></i> <h3>Set Total Salary</h3>
           </div>
 
           <form id ="salaryForm">
@@ -152,8 +134,7 @@
                 <input type ="number" id ="salaryInput" class ="form-control" placeholder ="50000" min ="0.01" step ="any" required>
               </div>
               <div id ="salaryErrorMsg" class ="error-msg d-none">
-                <i class ="fa-solid fa-circle-exclamation"></i>
-                <span>Please enter a valid salary amount.</span>
+                <i class ="fa-solid fa-circle-exclamation"></i> <span>Please enter a valid salary amount.</span>
               </div>
             </div>
 
@@ -166,8 +147,7 @@
 
         <div class ="card form-card">
           <div class ="card-title-row">
-            <i class ="fa-solid fa-plus-minus"></i>
-            <h3>Add Expense</h3>
+            <i class ="fa-solid fa-plus-minus"></i> <h3>Add Expense</h3>
           </div>
 
           <form id ="expenseForm">
@@ -175,8 +155,7 @@
               <label for ="expenseNameInput">Expense Name *</label>
               <input type ="text" id ="expenseNameInput" class ="form-control" placeholder ="e.g. Rent, Groceries, Shopping" required maxlength ="75">
               <div id ="expenseNameErrorMsg" class ="error-msg d-none">
-                <i class ="fa-solid fa-circle-exclamation"></i>
-                <span>Please enter expense name.</span>
+                <i class ="fa-solid fa-circle-exclamation"></i> <span>Please enter expense name.</span>
               </div>
             </div>
 
@@ -188,8 +167,7 @@
                   <input type ="number" id ="expenseAmountInput" class ="form-control" placeholder ="15000" min ="0.01" step ="any" required>
                 </div>
                 <div id ="expenseAmountErrorMsg" class ="error-msg d-none">
-                  <i class ="fa-solid fa-circle-exclamation"></i>
-                  <span>Enter a valid positive number.</span>
+                  <i class ="fa-solid fa-circle-exclamation"></i> <span>Enter a valid positive number.</span>
                 </div>
               </div>
 
@@ -220,8 +198,7 @@
       <div class ="right-column">
         <div class ="card chart-card">
           <div class ="card-title-row">
-            <i class ="fa-solid fa-chart-pie"></i>
-            <h3>Remaining Balance vs. Total Expenses</h3>
+            <i class ="fa-solid fa-chart-pie"></i> <h3>Remaining Balance vs. Total Expenses</h3>
           </div>
 
           <div class ="chart-wrapper">
@@ -235,13 +212,11 @@
 
           <div class ="chart-legend" id ="chartMetricsRow">
             <div class ="legend-item">
-              <span class ="legend-dot dot-balance"></span>
-              <span>Remaining Balance:</span>
+              <span class ="legend-dot dot-balance"></span> <span>Remaining Balance:</span>
               <strong id ="legendBalanceVal">0.00</strong>
             </div>
             <div class ="legend-item">
-              <span class ="legend-dot dot-expense"></span>
-              <span>Total Expenses:</span>
+              <span class ="legend-dot dot-expense"></span> <span>Total Expenses:</span>
               <strong id ="legendExpensesVal">0.00</strong>
             </div>
           </div>
@@ -251,9 +226,7 @@
         <div class ="card expense-card">
           <div class ="card-header-row">
             <div class ="title-with-badge">
-              <i class ="fa-solid fa-receipt"></i>
-              <h3>Expense List</h3>
-              <span id ="expensesCounter" class ="badge-count">0</span>
+              <i class ="fa-solid fa-receipt"></i> <h3>Expense List</h3> <span id ="expensesCounter" class ="badge-count">0</span>
             </div>
 
             <div class ="search-box">
