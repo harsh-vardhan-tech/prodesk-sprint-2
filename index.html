@@ -47,62 +47,55 @@
       </div>
     </div>
   </header>
-
-
 <div id ="thresholdAlertBanner" class ="alert-box d-none">
     <div class ="alert-inner">
-  <i class ="fa-solid fa-triangle-exclamation alert-icon"></i>
-      <div class ="alert-content">
-        <strong id ="alertTitle">Warning: Low Balance!</strong>
+<i class ="fa-solid fa-triangle-exclamation alert-icon"></i>
+      <div class ="alert-content">   <strong id ="alertTitle">Warning: Low Balance!</strong>
         <p id ="alertMessage">Your remaining balance is less than 10% of your total salary. Please check your spending.</p>
-      </div> </div>
-  </div>
-
-
+  </div> 
+</div>
+</div>
   <main class ="main-container">
-
     <div class ="cards-grid">
-      <div class ="card card-income">
+ <div class ="card card-income">
         <div class ="card-header">
-       <span class ="card-title">Total Salary</span>
-          <div class ="card-icon icon-income"><i class ="fa-solid fa-money-check-dollar"></i></div>
-     </div>
-        <div class ="card-amount">
-          <span class ="currency-symbol">₹</span> <span id ="totalSalaryDisplay">0.00</span>
-        </div>
+  <span class ="card-title">Total Salary</span>
+         <div class ="card-icon icon-income"><i class ="fa-solid fa-money-check-dollar"></i></div>
+</div>
+    <div  class ="card-amount">
+       <span class ="currency-symbol">₹</span>  <span id ="totalSalaryDisplay">0.00</span>
+   </div>
         <div class ="card-footer">
-          <span class ="badge" id ="salaryStatusTag">Set</span>
-          <span class ="subtext">Monthly Salary</span>
-        </div>
+   <span class ="badge"  id  ="salaryStatusTag">Set</span>
+   <span class ="subtext">Monthly Salary</span>
+ </div>
       </div>
-
   <div class ="card card-expense">
         <div class ="card-header">
-          <span class ="card-title">Total Expenses</span>
+  <span class ="card-title">Total Expenses</span>
    <div class ="card-icon icon-expense"><i class ="fa-solid fa-arrow-trend-up"></i></div>
         </div>
         <div class ="card-amount">
           <span class ="currency-symbol">₹</span> <span id ="totalExpensesDisplay">0.00</span>
         </div>
-     <div class ="card-footer">
+     <div   class ="card-footer">
           <span class ="badge badge-danger" id ="expensePercentageTag">0% of Salary</span>
-          <span class ="subtext" id ="expenseCountHint">0 expenses</span>
-     </div>
+      <span  class ="subtext" id ="expenseCountHint">0 expenses</span>
+ </div>
       </div>
-
-      <div class ="card card-balance" id ="remainingBalanceCard">
+ <div class ="card card-balance" id ="remainingBalanceCard">
         <div class ="card-header">
-          <span class ="card-title">Remaining Balance</span>
+                 <span class ="card-title">Remaining Balance</span>
       <div class ="card-icon icon-balance" id ="balanceBadge"><i class ="fa-solid fa-shield-halved"></i></div>
         </div>
-        <div class ="card-amount">
+  <div class ="card-amount">
           <span class ="currency-symbol" id ="balanceCurrencySymbol">₹</span> <span id ="remainingBalanceDisplay">0.00</span>
-        </div>
-        <div class ="card-footer">
+   </div>
+    <div class ="card-footer">
        <span class ="badge badge-success" id ="balanceStatusTag">100% Left</span>
           <span class ="subtext" id ="balanceRatioHint">Remaining</span>
         </div>
-      </div>
+</div>
 
       <div class ="card card-savings">
         <div class ="card-header">
@@ -267,13 +260,9 @@
   </div>
 
 
-  <footer class ="footer">
-    <div class ="footer-container">
-      <p>&copy; 2026 Cash-Flow &bull; Salary & Expense Tracker &bull; Built by Harsh Vardhan</p>
-      <div class ="footer-tags">
-        <span><i class ="fa-solid fa-code"></i> Vanilla JS</span>
-        <span><i class ="fa-solid fa-database"></i> LocalStorage</span>
-      </div>
+  <footer class = "footer">
+    <div class = "footer-container">
+      <p>&copy; 2026 Cash-Flow. All rights reserved.</p>
     </div>
   </footer>
 
